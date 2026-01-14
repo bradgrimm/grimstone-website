@@ -218,13 +218,16 @@
             position: relative;
             z-index: 2;
             text-align: center;
-            padding: 2rem;
+            padding: 0;
+            display: grid;
+            grid-template-columns: 2fr 3fr;
+            gap: 3rem;
+            align-items: center;
         }
 
         .hero-logo {
-            max-width: 400px;
-            width: 80%;
-            margin-bottom: 2rem;
+            max-width: 500px;
+            width: 100%;
             animation: fadeInScale 1s ease-out;
         }
 
@@ -376,7 +379,6 @@
             height: 0;
             overflow: hidden;
             border: 3px solid var(--secondary);
-            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
         }
 
         .video-container iframe {
@@ -691,7 +693,7 @@
         }
 
         /* Responsive Design */
-        @media (max-width: 768px) {
+        @media (max-width: 1024px) {
             nav ul {
                 position: fixed;
                 top: 70px;
@@ -713,18 +715,37 @@
                 display: block;
             }
 
+            #hero .hero-content {
+                grid-template-columns: 1fr !important;
+                gap: 2rem !important;
+            }
+
+            #hero .hero-logo {
+                max-width: 450px !important;
+                margin-top: 2rem !important;
+            }
+
             .music-content .fade-in {
                 flex-direction: column !important;
             }
 
             .music-content .fade-in > div:first-child {
-                width: 250px !important;
+                width: 300px !important;
                 margin: 0 auto 2rem !important;
             }
 
             .about-content,
             .contact-content {
                 grid-template-columns: 1fr;
+            }
+
+            .about-text {
+                max-width: 600px;
+                margin: 0 auto;
+            }
+
+            .genre-tags {
+                justify-content: center !important;
             }
 
             .photo-grid {
@@ -761,20 +782,22 @@
 
     <!-- Hero Section -->
     <section id="hero">
-        <div class="hero-content" style="max-width: 1000px; margin: 0 auto;">
-            <!-- Logo -->
-            <div style="text-align: center;">
-                <img src="assets/images/grimstone_gravestone_optimized.webp" alt="Grimstone Logo" class="hero-logo" style="max-width: 400px; width: 80%; margin-bottom: 1rem;">
-                <p class="hero-subtitle" style="margin-bottom: 2rem;">Punk • Pop-Punk • Alternative Rock</p>
+        <div style="position: relative; z-index: 2; max-width: 1400px; margin: 0 auto; padding: 2rem;">
+            <div class="hero-content">
+                <!-- Left: Logo -->
+                <div style="text-align: center;">
+                    <img src="assets/images/grimstone_gravestone_optimized.webp" alt="Grimstone Logo" class="hero-logo" style="max-width: 100%; width: 100%; margin-bottom: 0;">
+                </div>
+
+                <!-- Right: YouTube Video -->
+                <div class="video-container">
+                    <iframe src="https://www.youtube.com/embed/nqVWf1ivacI" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
             </div>
 
-            <!-- YouTube Video -->
-            <div class="video-container" style="margin-bottom: 2rem;">
-                <iframe src="https://www.youtube.com/embed/nqVWf1ivacI" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-            </div>
-
-            <!-- CTA Button -->
-            <div style="text-align: center;">
+            <!-- Listen Now button with subtitle - below both elements -->
+            <div style="text-align: center; margin-top: 2rem; display: flex; flex-direction: column; align-items: center; gap: 1rem;">
+                <p class="hero-subtitle" style="margin: 0;">PUNK • POP-PUNK • ALTERNATIVE ROCK</p>
                 <a href="#music" class="cta-button">Listen Now</a>
             </div>
         </div>
