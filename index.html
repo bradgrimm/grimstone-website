@@ -33,7 +33,7 @@
         /* CSS Variables - Punk/Alt Rock Aesthetic */
         :root {
             /* Colors */
-            --black: #0A0A0A;
+            --black: #000000;
             --white: #FFFFFF;
             --primary: #FF0055;
             --secondary: #00FFFF;
@@ -137,11 +137,13 @@
         }
 
         nav .logo {
-            font-family: var(--font-heading);
-            font-size: 2rem;
-            letter-spacing: 0.1em;
-            color: var(--white);
-            text-shadow: 0 0 20px var(--primary);
+            display: flex;
+            align-items: center;
+        }
+
+        nav .logo img {
+            height: 35px;
+            width: auto;
         }
 
         nav ul {
@@ -184,7 +186,7 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--accent-purple) 100%);
+            background: var(--black);
         }
 
         #hero::before {
@@ -223,7 +225,6 @@
             max-width: 400px;
             width: 80%;
             margin-bottom: 2rem;
-            filter: drop-shadow(0 0 30px var(--primary));
             animation: fadeInScale 1s ease-out;
         }
 
@@ -254,12 +255,10 @@
             border: 3px solid var(--primary);
             cursor: pointer;
             transition: all 0.3s ease;
-            animation: pulse 2s infinite;
         }
 
         .cta-button:hover {
             background: transparent;
-            box-shadow: 0 0 30px var(--primary);
             transform: scale(1.05);
         }
 
@@ -714,6 +713,15 @@
                 display: block;
             }
 
+            .music-content .fade-in {
+                flex-direction: column !important;
+            }
+
+            .music-content .fade-in > div:first-child {
+                width: 250px !important;
+                margin: 0 auto 2rem !important;
+            }
+
             .about-content,
             .contact-content {
                 grid-template-columns: 1fr;
@@ -732,49 +740,20 @@
             }
         }
 
-        /* Loading animation */
-        .loading {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: var(--black);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            transition: opacity 0.5s ease;
-        }
-
-        .loading.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .loading-text {
-            font-family: var(--font-heading);
-            font-size: 3rem;
-            color: var(--primary);
-            animation: pulse 1.5s infinite;
-        }
     </style>
 </head>
 <body>
-    <!-- Loading Screen -->
-    <div class="loading" id="loading">
-        <div class="loading-text">GRIMSTONE</div>
-    </div>
-
     <!-- Navigation -->
     <nav>
         <div class="container">
-            <div class="logo">GRIMSTONE</div>
+            <div class="logo">
+                <a href="#hero"><img src="assets/images/grimstone_text_optimized.webp" alt="Grimstone"></a>
+            </div>
             <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">☰</button>
             <ul id="navMenu">
                 <li><a href="#hero">Home</a></li>
-                <li><a href="#about">About</a></li>
                 <li><a href="#music">Music</a></li>
+                <li><a href="#about">About</a></li>
                 <li><a href="#contact">Contact</a></li>
             </ul>
         </div>
@@ -782,14 +761,58 @@
 
     <!-- Hero Section -->
     <section id="hero">
-        <div class="hero-content">
-            <!-- TODO: Add your logo image -->
-            <!-- <img src="assets/images/logo.svg" alt="Grimstone Logo" class="hero-logo"> -->
-            <h1 class="hero-title">GRIMSTONE</h1>
-            <p class="hero-subtitle">Punk • Pop-Punk • Alternative Rock</p>
-            <a href="#music" class="cta-button">Listen Now</a>
+        <div class="hero-content" style="max-width: 1000px; margin: 0 auto;">
+            <!-- Logo -->
+            <div style="text-align: center;">
+                <img src="assets/images/grimstone_gravestone_optimized.webp" alt="Grimstone Logo" class="hero-logo" style="max-width: 400px; width: 80%; margin-bottom: 1rem;">
+                <p class="hero-subtitle" style="margin-bottom: 2rem;">Punk • Pop-Punk • Alternative Rock</p>
+            </div>
+
+            <!-- YouTube Video -->
+            <div class="video-container" style="margin-bottom: 2rem;">
+                <iframe src="https://www.youtube.com/embed/nqVWf1ivacI" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+
+            <!-- CTA Button -->
+            <div style="text-align: center;">
+                <a href="#music" class="cta-button">Listen Now</a>
+            </div>
         </div>
         <div class="scroll-indicator"></div>
+    </section>
+
+    <!-- Music Section -->
+    <section id="music">
+        <div class="container">
+            <h2 class="section-title fade-in">Music</h2>
+            <div class="music-content">
+                <!-- Bandcamp Embed with Logo on Left -->
+                <div class="fade-in" style="display: flex; gap: 2rem; align-items: flex-start; justify-content: center; max-width: 1200px; margin: 0 auto;">
+                    <!-- Left: Reaper Logo -->
+                    <div style="flex-shrink: 0;">
+                        <img src="assets/images/grimstone_logo_optimized.webp" alt="Grimstone" style="width: 556px; max-width: 100%;">
+                    </div>
+
+                    <!-- Right: Bandcamp Players -->
+                    <div style="flex: 1; background: var(--gray-dark); border: 3px solid var(--primary); padding: 2rem;">
+                        <!-- Track 1: The Kraken -->
+                        <iframe style="border: 0; width: 100%; height: 120px; margin-bottom: 1rem;" src="https://bandcamp.com/EmbeddedPlayer/track=3192886681/size=large/bgcol=000000/linkcol=ff0055/tracklist=false/artwork=small/transparent=true/" seamless><a href="https://grimstones.bandcamp.com/track/the-kraken">The Kraken by Grimstone</a></iframe>
+
+                        <!-- Track 2: A Simple Song -->
+                        <iframe style="border: 0; width: 100%; height: 120px; margin-bottom: 1rem;" src="https://bandcamp.com/EmbeddedPlayer/track=3027200607/size=large/bgcol=000000/linkcol=ff0055/tracklist=false/artwork=small/transparent=true/" seamless><a href="https://grimstones.bandcamp.com/track/a-simple-song">A Simple Song by Grimstone</a></iframe>
+
+                        <!-- Track 3: How Do I Find -->
+                        <iframe style="border: 0; width: 100%; height: 120px; margin-bottom: 1.5rem;" src="https://bandcamp.com/EmbeddedPlayer/track=4068775686/size=large/bgcol=000000/linkcol=ff0055/tracklist=false/artwork=small/transparent=true/" seamless><a href="https://grimstones.bandcamp.com/track/how-do-i-find">How Do I Find by Grimstone</a></iframe>
+
+                        <div style="text-align: center;">
+                            <a href="https://grimstones.bandcamp.com/" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 0.75rem 2rem; background: var(--gray-medium); color: var(--secondary); font-family: var(--font-accent); font-size: 0.875rem; letter-spacing: 0.1em; text-transform: uppercase; border: 2px solid var(--secondary); text-decoration: none; transition: all 0.3s ease;">
+                                Download on Bandcamp →
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 
     <!-- About Section -->
@@ -830,66 +853,6 @@
         </div>
     </section>
 
-    <!-- Music Section -->
-    <section id="music">
-        <div class="container">
-            <h2 class="section-title fade-in">Music</h2>
-            <div class="music-content">
-                <!-- Video Section -->
-                <div class="fade-in">
-                    <h3 style="text-align: center; color: var(--secondary); margin-bottom: 1rem;">Demo Reel</h3>
-                    <div class="video-container">
-                        <!-- TODO: Replace VIDEO_ID with your YouTube video ID -->
-                        <!-- <iframe src="https://www.youtube.com/embed/VIDEO_ID" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> -->
-
-                        <!-- Placeholder -->
-                        <div style="width: 100%; height: 100%; background: var(--gray-dark); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 1rem;">
-                            <p style="font-family: var(--font-accent); color: var(--gray-light);">YouTube Video Placeholder</p>
-                            <p style="font-family: var(--font-accent); font-size: 0.875rem; color: var(--gray-light);">Add your video ID in index.html</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Audio Player -->
-                <div class="fade-in">
-                    <h3 style="text-align: center; color: var(--secondary); margin-bottom: 1rem;">Tracks</h3>
-                    <div class="audio-player">
-                        <div class="player-info">
-                            <div class="track-title" id="trackTitle">Select a track to play</div>
-                            <div class="track-artist">Grimstone</div>
-                        </div>
-
-                        <div class="player-controls">
-                            <button id="prevBtn" aria-label="Previous track">⏮</button>
-                            <button id="playBtn" aria-label="Play/Pause">▶</button>
-                            <button id="nextBtn" aria-label="Next track">⏭</button>
-                        </div>
-
-                        <div class="player-progress">
-                            <span class="time" id="currentTime">0:00</span>
-                            <input type="range" id="progressBar" min="0" max="100" value="0" aria-label="Seek">
-                            <span class="time" id="totalTime">0:00</span>
-                        </div>
-
-                        <canvas id="visualizer"></canvas>
-
-                        <ul class="playlist" id="playlist">
-                            <!-- TODO: Add your audio files and update these paths -->
-                            <!-- <li data-src="assets/audio/track1.mp3" data-title="Track 1 Name">01. Track 1 Name</li>
-                            <li data-src="assets/audio/track2.mp3" data-title="Track 2 Name">02. Track 2 Name</li>
-                            <li data-src="assets/audio/track3.mp3" data-title="Track 3 Name">03. Track 3 Name</li> -->
-
-                            <!-- Placeholder -->
-                            <li style="text-align: center; padding: 2rem; color: var(--gray-light); cursor: default;">
-                                Add your MP3 files to assets/audio/ and update the playlist in index.html
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- Contact Section -->
     <section id="contact">
         <div class="container">
@@ -898,23 +861,16 @@
                 <div class="contact-info fade-in">
                     <h3>Book Us</h3>
                     <p>Interested in booking Grimstone for your venue or event? We bring high-energy performances and a killer setlist.</p>
-                    <!-- TODO: Add your contact email -->
-                    <a href="mailto:booking@grimstonemusic.com" class="contact-email">booking@grimstonemusic.com</a>
+                    <a href="mailto:grimm.bradley@gmail.com" class="contact-email">grimm.bradley@gmail.com</a>
+                    <a href="tel:+18018989541" class="contact-email" style="margin-top: 1rem;">801-898-9541</a>
                 </div>
 
                 <div class="contact-info fade-in">
                     <h3>Follow Us</h3>
-                    <p>Stay updated with our latest shows, recordings, and band news on social media.</p>
+                    <p>Stay updated with our latest shows, recordings, and band news.</p>
                     <div class="social-links">
-                        <!-- TODO: Add your social media links -->
-                        <!-- <a href="https://facebook.com/yourband" target="_blank" aria-label="Facebook">f</a>
-                        <a href="https://instagram.com/yourband" target="_blank" aria-label="Instagram">📷</a>
-                        <a href="https://youtube.com/yourband" target="_blank" aria-label="YouTube">▶</a> -->
-
-                        <!-- Placeholder links -->
-                        <a href="#" aria-label="Facebook" style="cursor: default; opacity: 0.5;">f</a>
-                        <a href="#" aria-label="Instagram" style="cursor: default; opacity: 0.5;">📷</a>
-                        <a href="#" aria-label="YouTube" style="cursor: default; opacity: 0.5;">▶</a>
+                        <a href="https://grimstones.bandcamp.com/" target="_blank" rel="noopener noreferrer" aria-label="Bandcamp">♫</a>
+                        <a href="https://www.youtube.com/@bradleygrimm" target="_blank" rel="noopener noreferrer" aria-label="YouTube">▶</a>
                     </div>
                 </div>
             </div>
@@ -931,11 +887,6 @@
     <script>
         // Wait for DOM to load
         document.addEventListener('DOMContentLoaded', () => {
-            // Hide loading screen
-            setTimeout(() => {
-                document.getElementById('loading').classList.add('hidden');
-            }, 1000);
-
             // Mobile menu toggle
             const menuToggle = document.getElementById('menuToggle');
             const navMenu = document.getElementById('navMenu');
@@ -969,179 +920,8 @@
                 observer.observe(el);
             });
 
-            // Audio Player
-            const audio = new Audio();
-            const playBtn = document.getElementById('playBtn');
-            const prevBtn = document.getElementById('prevBtn');
-            const nextBtn = document.getElementById('nextBtn');
-            const progressBar = document.getElementById('progressBar');
-            const currentTimeEl = document.getElementById('currentTime');
-            const totalTimeEl = document.getElementById('totalTime');
-            const trackTitleEl = document.getElementById('trackTitle');
-            const playlist = document.getElementById('playlist');
-            const visualizer = document.getElementById('visualizer');
-
-            let currentTrack = 0;
-            let tracks = [];
-            let audioContext = null;
-            let analyser = null;
-            let dataArray = null;
-            let source = null;
-
-            // Initialize playlist
-            function initPlaylist() {
-                tracks = Array.from(playlist.querySelectorAll('li[data-src]'));
-
-                if (tracks.length === 0) {
-                    // No tracks available
-                    playBtn.disabled = true;
-                    prevBtn.disabled = true;
-                    nextBtn.disabled = true;
-                    return;
-                }
-
-                tracks.forEach((track, index) => {
-                    track.addEventListener('click', () => {
-                        loadTrack(index);
-                        audio.play();
-                    });
-                });
-
-                // Load first track
-                if (tracks.length > 0) {
-                    loadTrack(0);
-                }
-            }
-
-            function loadTrack(index) {
-                if (index < 0 || index >= tracks.length) return;
-
-                currentTrack = index;
-                const track = tracks[currentTrack];
-
-                audio.src = track.dataset.src;
-                trackTitleEl.textContent = track.dataset.title || `Track ${index + 1}`;
-
-                // Update active state
-                tracks.forEach(t => t.classList.remove('active'));
-                track.classList.add('active');
-
-                // Setup Web Audio API for visualizer
-                setupAudioContext();
-            }
-
-            function setupAudioContext() {
-                if (!audioContext) {
-                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                    analyser = audioContext.createAnalyser();
-                    analyser.fftSize = 256;
-
-                    source = audioContext.createMediaElementSource(audio);
-                    source.connect(analyser);
-                    analyser.connect(audioContext.destination);
-
-                    const bufferLength = analyser.frequencyBinCount;
-                    dataArray = new Uint8Array(bufferLength);
-
-                    drawVisualizer();
-                }
-            }
-
-            function drawVisualizer() {
-                if (!analyser) return;
-
-                const canvas = visualizer;
-                const ctx = canvas.getContext('2d');
-                const width = canvas.width = canvas.offsetWidth;
-                const height = canvas.height = canvas.offsetHeight;
-
-                analyser.getByteFrequencyData(dataArray);
-
-                ctx.fillStyle = '#0A0A0A';
-                ctx.fillRect(0, 0, width, height);
-
-                const barWidth = (width / dataArray.length) * 2.5;
-                let x = 0;
-
-                for (let i = 0; i < dataArray.length; i++) {
-                    const barHeight = (dataArray[i] / 255) * height;
-
-                    // Gradient from primary to secondary
-                    const gradient = ctx.createLinearGradient(0, height - barHeight, 0, height);
-                    gradient.addColorStop(0, '#FF0055');
-                    gradient.addColorStop(1, '#00FFFF');
-
-                    ctx.fillStyle = gradient;
-                    ctx.fillRect(x, height - barHeight, barWidth, barHeight);
-
-                    x += barWidth + 1;
-                }
-
-                requestAnimationFrame(drawVisualizer);
-            }
-
-            function playPause() {
-                if (tracks.length === 0) return;
-
-                if (audio.paused) {
-                    audio.play();
-                    playBtn.textContent = '⏸';
-                } else {
-                    audio.pause();
-                    playBtn.textContent = '▶';
-                }
-            }
-
-            function previousTrack() {
-                if (currentTrack > 0) {
-                    loadTrack(currentTrack - 1);
-                    audio.play();
-                }
-            }
-
-            function nextTrack() {
-                if (currentTrack < tracks.length - 1) {
-                    loadTrack(currentTrack + 1);
-                    audio.play();
-                } else {
-                    // Loop to first track
-                    loadTrack(0);
-                    audio.play();
-                }
-            }
-
-            function formatTime(seconds) {
-                const mins = Math.floor(seconds / 60);
-                const secs = Math.floor(seconds % 60);
-                return `${mins}:${secs.toString().padStart(2, '0')}`;
-            }
-
-            function updateProgress() {
-                if (audio.duration) {
-                    const progress = (audio.currentTime / audio.duration) * 100;
-                    progressBar.value = progress;
-                    currentTimeEl.textContent = formatTime(audio.currentTime);
-                    totalTimeEl.textContent = formatTime(audio.duration);
-                }
-            }
-
-            function seek(e) {
-                if (audio.duration) {
-                    const percent = progressBar.value;
-                    audio.currentTime = (percent / 100) * audio.duration;
-                }
-            }
-
-            // Event listeners
-            playBtn.addEventListener('click', playPause);
-            prevBtn.addEventListener('click', previousTrack);
-            nextBtn.addEventListener('click', nextTrack);
-            audio.addEventListener('timeupdate', updateProgress);
-            audio.addEventListener('ended', nextTrack);
-            progressBar.addEventListener('input', seek);
-
-            // Initialize
-            initPlaylist();
+            // Bandcamp player replaces custom audio player
+            // No JavaScript needed - Bandcamp iframe handles everything
 
             // Fix viewport height on mobile
             function setVH() {
