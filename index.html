@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <!-- SEO Meta Tags -->
+    <title>Grimstone - Punk Rock Band</title>
+    <meta name="description" content="Grimstone is a punk/pop-punk/alternative rock band. Energetic live shows featuring 90s-2000s rock vibes. Check out our music and upcoming shows.">
+    <meta name="keywords" content="punk band, pop punk, alternative rock, live music, Grimstone, rock band">
+
+    <!-- Open Graph (Facebook, LinkedIn) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Grimstone - Punk Rock Band">
+    <meta property="og:description" content="Energetic punk/pop-punk band. Check out our music and upcoming shows.">
+    <meta property="og:url" content="https://grimstonemusic.com">
+    <meta property="og:image" content="https://grimstonemusic.com/assets/images/og-image.jpg">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Grimstone - Punk Rock Band">
+    <meta name="twitter:description" content="Energetic punk/pop-punk band. Check out our music and upcoming shows.">
+    <meta name="twitter:image" content="https://grimstonemusic.com/assets/images/og-image.jpg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* CSS Variables - Punk/Alt Rock Aesthetic */
+        :root {
+            /* Colors */
+            --black: #0A0A0A;
+            --white: #FFFFFF;
+            --primary: #FF0055;
+            --secondary: #00FFFF;
+            --gray-dark: #1A1A1A;
+            --gray-medium: #333333;
+            --gray-light: #666666;
+            --accent-yellow: #FFFF00;
+            --accent-purple: #9D00FF;
+
+            /* Typography */
+            --font-heading: 'Bebas Neue', 'Impact', sans-serif;
+            --font-body: 'Inter', 'Helvetica Neue', sans-serif;
+            --font-accent: 'Space Grotesk', monospace;
+
+            /* Spacing */
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 2rem;
+            --spacing-lg: 4rem;
+            --spacing-xl: 6rem;
+
+            /* Viewport height fix for mobile */
+            --vh: 1vh;
+        }
+
+        /* CSS Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--black);
+            color: var(--white);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-heading);
+            font-weight: 400;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            font-size: clamp(3rem, 10vw, 8rem);
+            line-height: 0.9;
+        }
+
+        h2 {
+            font-size: clamp(2.5rem, 6vw, 5rem);
+            line-height: 1;
+        }
+
+        h3 {
+            font-size: clamp(1.5rem, 3vw, 2.5rem);
+        }
+
+        p {
+            font-size: clamp(1rem, 2vw, 1.125rem);
+            max-width: 70ch;
+        }
+
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: var(--secondary);
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid var(--primary);
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        nav .logo {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            letter-spacing: 0.1em;
+            color: var(--white);
+            text-shadow: 0 0 20px var(--primary);
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: var(--white);
+            font-family: var(--font-accent);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.875rem;
+            letter-spacing: 0.1em;
+            transition: all 0.3s ease;
+        }
+
+        nav a:hover {
+            color: var(--primary);
+            text-shadow: 0 0 10px var(--primary);
+        }
+
+        /* Mobile Menu Button */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--white);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        /* Hero Section */
+        #hero {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent-purple) 100%);
+        }
+
+        #hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('assets/images/hero-photo.jpg');
+            background-size: cover;
+            background-position: center;
+            opacity: 0.3;
+            z-index: 0;
+        }
+
+        #hero::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: radial-gradient(circle at center, transparent 0%, var(--black) 100%);
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .hero-logo {
+            max-width: 400px;
+            width: 80%;
+            margin-bottom: 2rem;
+            filter: drop-shadow(0 0 30px var(--primary));
+            animation: fadeInScale 1s ease-out;
+        }
+
+        .hero-title {
+            margin-bottom: 1rem;
+            animation: glitchIn 1s ease-out;
+            position: relative;
+        }
+
+        .hero-subtitle {
+            font-family: var(--font-accent);
+            font-size: clamp(1rem, 2vw, 1.5rem);
+            color: var(--secondary);
+            margin-bottom: 2rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+
+        .cta-button {
+            display: inline-block;
+            padding: 1rem 3rem;
+            background: var(--primary);
+            color: var(--white);
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            border: 3px solid var(--primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: pulse 2s infinite;
+        }
+
+        .cta-button:hover {
+            background: transparent;
+            box-shadow: 0 0 30px var(--primary);
+            transform: scale(1.05);
+        }
+
+        .scroll-indicator {
+            position: absolute;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: bounce 2s infinite;
+            z-index: 2;
+        }
+
+        .scroll-indicator::before {
+            content: '↓';
+            font-size: 2rem;
+            color: var(--white);
+        }
+
+        /* Section Styling */
+        section {
+            padding: var(--spacing-xl) var(--spacing-md);
+            position: relative;
+        }
+
+        section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            margin-bottom: var(--spacing-md);
+            color: var(--primary);
+            text-align: center;
+        }
+
+        /* About Section */
+        #about {
+            background-color: var(--gray-dark);
+        }
+
+        .about-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-lg);
+            align-items: center;
+        }
+
+        .about-text {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .genre-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .tag {
+            padding: 0.5rem 1rem;
+            background: var(--gray-medium);
+            border: 2px solid var(--secondary);
+            color: var(--secondary);
+            font-family: var(--font-accent);
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .photo-grid img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border: 3px solid var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .photo-grid img:hover {
+            transform: scale(1.05);
+            filter: hue-rotate(15deg);
+            box-shadow: 0 0 30px var(--primary);
+        }
+
+        /* Music Section */
+        #music {
+            background-color: var(--black);
+        }
+
+        .music-content {
+            display: grid;
+            gap: var(--spacing-lg);
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 aspect ratio */
+            height: 0;
+            overflow: hidden;
+            border: 3px solid var(--secondary);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.3);
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Audio Player */
+        .audio-player {
+            background: var(--gray-dark);
+            border: 3px solid var(--primary);
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .audio-player::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(255, 0, 85, 0.03) 2px,
+                rgba(255, 0, 85, 0.03) 4px
+            );
+            pointer-events: none;
+        }
+
+        .player-info {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .track-title {
+            font-family: var(--font-heading);
+            font-size: 2rem;
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .track-artist {
+            font-family: var(--font-accent);
+            color: var(--secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .player-controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .player-controls button {
+            background: var(--gray-medium);
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .player-controls button:hover {
+            background: var(--primary);
+            color: var(--white);
+            box-shadow: 0 0 20px var(--primary);
+            transform: scale(1.1);
+        }
+
+        .player-controls button#playBtn {
+            width: 80px;
+            height: 80px;
+            font-size: 2rem;
+        }
+
+        .player-progress {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .time {
+            font-family: var(--font-accent);
+            color: var(--secondary);
+            min-width: 50px;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            -webkit-appearance: none;
+            appearance: none;
+            height: 6px;
+            background: var(--gray-medium);
+            outline: none;
+            border-radius: 3px;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            cursor: pointer;
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            background: var(--primary);
+            cursor: pointer;
+            border-radius: 50%;
+            border: none;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .playlist {
+            list-style: none;
+            margin-top: 2rem;
+        }
+
+        .playlist li {
+            padding: 1rem;
+            border-bottom: 1px solid var(--gray-medium);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: var(--font-accent);
+        }
+
+        .playlist li:hover {
+            background: var(--gray-medium);
+            border-left: 4px solid var(--primary);
+            padding-left: 1.5rem;
+        }
+
+        .playlist li.active {
+            background: var(--gray-medium);
+            border-left: 4px solid var(--secondary);
+            padding-left: 1.5rem;
+            color: var(--secondary);
+        }
+
+        /* Visualizer */
+        #visualizer {
+            width: 100%;
+            height: 100px;
+            margin-top: 1rem;
+            border: 2px solid var(--secondary);
+            background: var(--black);
+        }
+
+        /* Contact Section */
+        #contact {
+            background-color: var(--gray-dark);
+        }
+
+        .contact-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-lg);
+            text-align: center;
+        }
+
+        .contact-info h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .contact-info p {
+            margin: 0 auto 1rem;
+        }
+
+        .contact-email {
+            font-family: var(--font-accent);
+            font-size: 1.5rem;
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: var(--gray-medium);
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .contact-email:hover {
+            background: var(--primary);
+            color: var(--white);
+            box-shadow: 0 0 30px var(--primary);
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            background: var(--gray-medium);
+            border: 2px solid var(--secondary);
+            border-radius: 50%;
+            font-size: 1.5rem;
+            color: var(--secondary);
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            background: var(--secondary);
+            color: var(--black);
+            box-shadow: 0 0 30px var(--secondary);
+            transform: scale(1.1);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--black);
+            border-top: 2px solid var(--primary);
+            padding: var(--spacing-md);
+            text-align: center;
+        }
+
+        footer p {
+            margin: 0 auto;
+            color: var(--gray-light);
+            font-family: var(--font-accent);
+            font-size: 0.875rem;
+        }
+
+        /* Animations */
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes glitchIn {
+            0% {
+                opacity: 0;
+                transform: translateX(-100px);
+            }
+            20% {
+                transform: translateX(20px);
+            }
+            40% {
+                transform: translateX(-10px);
+            }
+            60% {
+                transform: translateX(5px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                box-shadow: 0 0 20px var(--primary);
+            }
+            50% {
+                box-shadow: 0 0 40px var(--primary);
+            }
+        }
+
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateX(-50%) translateY(0);
+            }
+            50% {
+                transform: translateX(-50%) translateY(-10px);
+            }
+        }
+
+        /* Scroll animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            nav ul {
+                position: fixed;
+                top: 70px;
+                left: -100%;
+                flex-direction: column;
+                background: rgba(10, 10, 10, 0.98);
+                width: 100%;
+                padding: 2rem;
+                gap: 1rem;
+                transition: left 0.3s ease;
+                border-top: 2px solid var(--primary);
+            }
+
+            nav ul.active {
+                left: 0;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .about-content,
+            .contact-content {
+                grid-template-columns: 1fr;
+            }
+
+            .photo-grid {
+                grid-template-columns: 1fr;
+            }
+
+            section {
+                padding: var(--spacing-lg) var(--spacing-sm);
+            }
+
+            .hero-logo {
+                max-width: 300px;
+            }
+        }
+
+        /* Loading animation */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--black);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-text {
+            font-family: var(--font-heading);
+            font-size: 3rem;
+            color: var(--primary);
+            animation: pulse 1.5s infinite;
+        }
+    </style>
+</head>
+<body>
+    <!-- Loading Screen -->
+    <div class="loading" id="loading">
+        <div class="loading-text">GRIMSTONE</div>
+    </div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="container">
+            <div class="logo">GRIMSTONE</div>
+            <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">☰</button>
+            <ul id="navMenu">
+                <li><a href="#hero">Home</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#music">Music</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero">
+        <div class="hero-content">
+            <!-- TODO: Add your logo image -->
+            <!-- <img src="assets/images/logo.svg" alt="Grimstone Logo" class="hero-logo"> -->
+            <h1 class="hero-title">GRIMSTONE</h1>
+            <p class="hero-subtitle">Punk • Pop-Punk • Alternative Rock</p>
+            <a href="#music" class="cta-button">Listen Now</a>
+        </div>
+        <div class="scroll-indicator"></div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about">
+        <div class="container">
+            <h2 class="section-title fade-in">About the Band</h2>
+            <div class="about-content">
+                <div class="about-text fade-in">
+                    <p>Grimstone brings high-energy punk and alternative rock to the stage, channeling the spirit of 90s and 2000s rock. Our mission is simple: play live, write originals, and keep the music fun and authentic.</p>
+
+                    <p>Drawing inspiration from Jimmy Eat World, Pixies, Ramones, Foo Fighters, The Strokes, The Killers, and Franz Ferdinand, we blend punk attitude with pop sensibility. Whether we're covering classics or crafting our own sound, we bring raw energy and tight musicianship to every show.</p>
+
+                    <p>We're all about nailing the core songs, adding some twisty genre-bent covers, and building a setlist that keeps the crowd moving. 2026 is the year we take our originals to the next level.</p>
+
+                    <div class="genre-tags">
+                        <span class="tag">Punk</span>
+                        <span class="tag">Pop-Punk</span>
+                        <span class="tag">Alternative</span>
+                        <span class="tag">90s Rock</span>
+                        <span class="tag">2000s Rock</span>
+                    </div>
+                </div>
+
+                <div class="photo-grid fade-in">
+                    <!-- TODO: Add your band photos -->
+                    <!-- <img src="assets/images/band-photos/photo1.jpg" alt="Grimstone performing live">
+                    <img src="assets/images/band-photos/photo2.jpg" alt="Grimstone band members">
+                    <img src="assets/images/band-photos/photo3.jpg" alt="Grimstone on stage">
+                    <img src="assets/images/band-photos/photo4.jpg" alt="Grimstone rehearsal"> -->
+
+                    <!-- Placeholder boxes -->
+                    <div style="width: 100%; height: 250px; background: var(--gray-medium); border: 3px solid var(--primary); display: flex; align-items: center; justify-content: center; font-family: var(--font-accent); color: var(--gray-light);">Photo 1</div>
+                    <div style="width: 100%; height: 250px; background: var(--gray-medium); border: 3px solid var(--primary); display: flex; align-items: center; justify-content: center; font-family: var(--font-accent); color: var(--gray-light);">Photo 2</div>
+                    <div style="width: 100%; height: 250px; background: var(--gray-medium); border: 3px solid var(--primary); display: flex; align-items: center; justify-content: center; font-family: var(--font-accent); color: var(--gray-light);">Photo 3</div>
+                    <div style="width: 100%; height: 250px; background: var(--gray-medium); border: 3px solid var(--primary); display: flex; align-items: center; justify-content: center; font-family: var(--font-accent); color: var(--gray-light);">Photo 4</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Music Section -->
+    <section id="music">
+        <div class="container">
+            <h2 class="section-title fade-in">Music</h2>
+            <div class="music-content">
+                <!-- Video Section -->
+                <div class="fade-in">
+                    <h3 style="text-align: center; color: var(--secondary); margin-bottom: 1rem;">Demo Reel</h3>
+                    <div class="video-container">
+                        <!-- TODO: Replace VIDEO_ID with your YouTube video ID -->
+                        <!-- <iframe src="https://www.youtube.com/embed/VIDEO_ID" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe> -->
+
+                        <!-- Placeholder -->
+                        <div style="width: 100%; height: 100%; background: var(--gray-dark); display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 1rem;">
+                            <p style="font-family: var(--font-accent); color: var(--gray-light);">YouTube Video Placeholder</p>
+                            <p style="font-family: var(--font-accent); font-size: 0.875rem; color: var(--gray-light);">Add your video ID in index.html</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Audio Player -->
+                <div class="fade-in">
+                    <h3 style="text-align: center; color: var(--secondary); margin-bottom: 1rem;">Tracks</h3>
+                    <div class="audio-player">
+                        <div class="player-info">
+                            <div class="track-title" id="trackTitle">Select a track to play</div>
+                            <div class="track-artist">Grimstone</div>
+                        </div>
+
+                        <div class="player-controls">
+                            <button id="prevBtn" aria-label="Previous track">⏮</button>
+                            <button id="playBtn" aria-label="Play/Pause">▶</button>
+                            <button id="nextBtn" aria-label="Next track">⏭</button>
+                        </div>
+
+                        <div class="player-progress">
+                            <span class="time" id="currentTime">0:00</span>
+                            <input type="range" id="progressBar" min="0" max="100" value="0" aria-label="Seek">
+                            <span class="time" id="totalTime">0:00</span>
+                        </div>
+
+                        <canvas id="visualizer"></canvas>
+
+                        <ul class="playlist" id="playlist">
+                            <!-- TODO: Add your audio files and update these paths -->
+                            <!-- <li data-src="assets/audio/track1.mp3" data-title="Track 1 Name">01. Track 1 Name</li>
+                            <li data-src="assets/audio/track2.mp3" data-title="Track 2 Name">02. Track 2 Name</li>
+                            <li data-src="assets/audio/track3.mp3" data-title="Track 3 Name">03. Track 3 Name</li> -->
+
+                            <!-- Placeholder -->
+                            <li style="text-align: center; padding: 2rem; color: var(--gray-light); cursor: default;">
+                                Add your MP3 files to assets/audio/ and update the playlist in index.html
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact">
+        <div class="container">
+            <h2 class="section-title fade-in">Get In Touch</h2>
+            <div class="contact-content">
+                <div class="contact-info fade-in">
+                    <h3>Book Us</h3>
+                    <p>Interested in booking Grimstone for your venue or event? We bring high-energy performances and a killer setlist.</p>
+                    <!-- TODO: Add your contact email -->
+                    <a href="mailto:booking@grimstonemusic.com" class="contact-email">booking@grimstonemusic.com</a>
+                </div>
+
+                <div class="contact-info fade-in">
+                    <h3>Follow Us</h3>
+                    <p>Stay updated with our latest shows, recordings, and band news on social media.</p>
+                    <div class="social-links">
+                        <!-- TODO: Add your social media links -->
+                        <!-- <a href="https://facebook.com/yourband" target="_blank" aria-label="Facebook">f</a>
+                        <a href="https://instagram.com/yourband" target="_blank" aria-label="Instagram">📷</a>
+                        <a href="https://youtube.com/yourband" target="_blank" aria-label="YouTube">▶</a> -->
+
+                        <!-- Placeholder links -->
+                        <a href="#" aria-label="Facebook" style="cursor: default; opacity: 0.5;">f</a>
+                        <a href="#" aria-label="Instagram" style="cursor: default; opacity: 0.5;">📷</a>
+                        <a href="#" aria-label="YouTube" style="cursor: default; opacity: 0.5;">▶</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Grimstone. All rights reserved. Built with attitude.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Wait for DOM to load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Hide loading screen
+            setTimeout(() => {
+                document.getElementById('loading').classList.add('hidden');
+            }, 1000);
+
+            // Mobile menu toggle
+            const menuToggle = document.getElementById('menuToggle');
+            const navMenu = document.getElementById('navMenu');
+
+            menuToggle.addEventListener('click', () => {
+                navMenu.classList.toggle('active');
+            });
+
+            // Close menu when clicking a link
+            navMenu.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    navMenu.classList.remove('active');
+                });
+            });
+
+            // Scroll animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -100px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.fade-in').forEach(el => {
+                observer.observe(el);
+            });
+
+            // Audio Player
+            const audio = new Audio();
+            const playBtn = document.getElementById('playBtn');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const progressBar = document.getElementById('progressBar');
+            const currentTimeEl = document.getElementById('currentTime');
+            const totalTimeEl = document.getElementById('totalTime');
+            const trackTitleEl = document.getElementById('trackTitle');
+            const playlist = document.getElementById('playlist');
+            const visualizer = document.getElementById('visualizer');
+
+            let currentTrack = 0;
+            let tracks = [];
+            let audioContext = null;
+            let analyser = null;
+            let dataArray = null;
+            let source = null;
+
+            // Initialize playlist
+            function initPlaylist() {
+                tracks = Array.from(playlist.querySelectorAll('li[data-src]'));
+
+                if (tracks.length === 0) {
+                    // No tracks available
+                    playBtn.disabled = true;
+                    prevBtn.disabled = true;
+                    nextBtn.disabled = true;
+                    return;
+                }
+
+                tracks.forEach((track, index) => {
+                    track.addEventListener('click', () => {
+                        loadTrack(index);
+                        audio.play();
+                    });
+                });
+
+                // Load first track
+                if (tracks.length > 0) {
+                    loadTrack(0);
+                }
+            }
+
+            function loadTrack(index) {
+                if (index < 0 || index >= tracks.length) return;
+
+                currentTrack = index;
+                const track = tracks[currentTrack];
+
+                audio.src = track.dataset.src;
+                trackTitleEl.textContent = track.dataset.title || `Track ${index + 1}`;
+
+                // Update active state
+                tracks.forEach(t => t.classList.remove('active'));
+                track.classList.add('active');
+
+                // Setup Web Audio API for visualizer
+                setupAudioContext();
+            }
+
+            function setupAudioContext() {
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                    analyser = audioContext.createAnalyser();
+                    analyser.fftSize = 256;
+
+                    source = audioContext.createMediaElementSource(audio);
+                    source.connect(analyser);
+                    analyser.connect(audioContext.destination);
+
+                    const bufferLength = analyser.frequencyBinCount;
+                    dataArray = new Uint8Array(bufferLength);
+
+                    drawVisualizer();
+                }
+            }
+
+            function drawVisualizer() {
+                if (!analyser) return;
+
+                const canvas = visualizer;
+                const ctx = canvas.getContext('2d');
+                const width = canvas.width = canvas.offsetWidth;
+                const height = canvas.height = canvas.offsetHeight;
+
+                analyser.getByteFrequencyData(dataArray);
+
+                ctx.fillStyle = '#0A0A0A';
+                ctx.fillRect(0, 0, width, height);
+
+                const barWidth = (width / dataArray.length) * 2.5;
+                let x = 0;
+
+                for (let i = 0; i < dataArray.length; i++) {
+                    const barHeight = (dataArray[i] / 255) * height;
+
+                    // Gradient from primary to secondary
+                    const gradient = ctx.createLinearGradient(0, height - barHeight, 0, height);
+                    gradient.addColorStop(0, '#FF0055');
+                    gradient.addColorStop(1, '#00FFFF');
+
+                    ctx.fillStyle = gradient;
+                    ctx.fillRect(x, height - barHeight, barWidth, barHeight);
+
+                    x += barWidth + 1;
+                }
+
+                requestAnimationFrame(drawVisualizer);
+            }
+
+            function playPause() {
+                if (tracks.length === 0) return;
+
+                if (audio.paused) {
+                    audio.play();
+                    playBtn.textContent = '⏸';
+                } else {
+                    audio.pause();
+                    playBtn.textContent = '▶';
+                }
+            }
+
+            function previousTrack() {
+                if (currentTrack > 0) {
+                    loadTrack(currentTrack - 1);
+                    audio.play();
+                }
+            }
+
+            function nextTrack() {
+                if (currentTrack < tracks.length - 1) {
+                    loadTrack(currentTrack + 1);
+                    audio.play();
+                } else {
+                    // Loop to first track
+                    loadTrack(0);
+                    audio.play();
+                }
+            }
+
+            function formatTime(seconds) {
+                const mins = Math.floor(seconds / 60);
+                const secs = Math.floor(seconds % 60);
+                return `${mins}:${secs.toString().padStart(2, '0')}`;
+            }
+
+            function updateProgress() {
+                if (audio.duration) {
+                    const progress = (audio.currentTime / audio.duration) * 100;
+                    progressBar.value = progress;
+                    currentTimeEl.textContent = formatTime(audio.currentTime);
+                    totalTimeEl.textContent = formatTime(audio.duration);
+                }
+            }
+
+            function seek(e) {
+                if (audio.duration) {
+                    const percent = progressBar.value;
+                    audio.currentTime = (percent / 100) * audio.duration;
+                }
+            }
+
+            // Event listeners
+            playBtn.addEventListener('click', playPause);
+            prevBtn.addEventListener('click', previousTrack);
+            nextBtn.addEventListener('click', nextTrack);
+            audio.addEventListener('timeupdate', updateProgress);
+            audio.addEventListener('ended', nextTrack);
+            progressBar.addEventListener('input', seek);
+
+            // Initialize
+            initPlaylist();
+
+            // Fix viewport height on mobile
+            function setVH() {
+                const vh = window.innerHeight * 0.01;
+                document.documentElement.style.setProperty('--vh', `${vh}px`);
+            }
+
+            setVH();
+            window.addEventListener('resize', setVH);
+
+            // Register service worker for offline support
+            if ('serviceWorker' in navigator) {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                        console.log('Service Worker registered:', registration);
+                    })
+                    .catch(error => {
+                        console.log('Service Worker registration failed:', error);
+                    });
+            }
+        });
+    </script>
+</body>
+</html>
