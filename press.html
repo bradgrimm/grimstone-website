@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+    <!-- SEO Meta Tags -->
+    <title>Grimstone - Electronic Press Kit (EPK)</title>
+    <meta name="description" content="Grimstone Electronic Press Kit - High-energy punk/alt-rock band from Riverton, Utah. Bio, music, photos, and booking information.">
+    <meta name="keywords" content="punk band, pop punk, alternative rock, live music, Grimstone, EPK, press kit, booking">
+
+    <!-- Open Graph (Facebook, LinkedIn) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Grimstone - Electronic Press Kit">
+    <meta property="og:description" content="High-energy punk/alt-rock band from Riverton, Utah. Available for booking.">
+    <meta property="og:url" content="https://grimstonemusic.com/press">
+    <meta property="og:image" content="https://grimstonemusic.com/assets/images/og-image.jpg">
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Grimstone - Electronic Press Kit">
+    <meta name="twitter:description" content="High-energy punk/alt-rock band from Riverton, Utah. Available for booking.">
+    <meta name="twitter:image" content="https://grimstonemusic.com/assets/images/og-image.jpg">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        /* CSS Variables - Punk/Alt Rock Aesthetic */
+        :root {
+            /* Colors */
+            --black: #000000;
+            --white: #FFFFFF;
+            --primary: #FF0055;
+            --secondary: #00FFFF;
+            --gray-dark: #1A1A1A;
+            --gray-medium: #333333;
+            --gray-light: #666666;
+            --accent-yellow: #FFFF00;
+            --accent-purple: #9D00FF;
+
+            /* Typography */
+            --font-heading: 'Bebas Neue', 'Impact', sans-serif;
+            --font-body: 'Inter', 'Helvetica Neue', sans-serif;
+            --font-accent: 'Space Grotesk', monospace;
+
+            /* Spacing */
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 2rem;
+            --spacing-lg: 4rem;
+            --spacing-xl: 6rem;
+
+            /* Viewport height fix for mobile */
+            --vh: 1vh;
+        }
+
+        /* CSS Reset */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background-color: var(--black);
+            color: var(--white);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Typography */
+        h1, h2, h3, h4, h5, h6 {
+            font-family: var(--font-heading);
+            font-weight: 400;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        h1 {
+            font-size: clamp(3rem, 8vw, 6rem);
+            line-height: 0.9;
+        }
+
+        h2 {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            line-height: 1;
+        }
+
+        h3 {
+            font-size: clamp(1.5rem, 3vw, 2.5rem);
+        }
+
+        h4 {
+            font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+        }
+
+        p {
+            font-size: clamp(1rem, 2vw, 1.125rem);
+            max-width: 70ch;
+        }
+
+        a {
+            color: var(--primary);
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+
+        a:hover {
+            color: var(--secondary);
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid var(--primary);
+        }
+
+        nav .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        nav .logo {
+            display: flex;
+            align-items: center;
+        }
+
+        nav .logo img {
+            height: 50px;
+            width: auto;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        nav a {
+            color: var(--white);
+            font-family: var(--font-accent);
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.875rem;
+            letter-spacing: 0.1em;
+            transition: all 0.3s ease;
+        }
+
+        nav a:hover {
+            color: var(--primary);
+            text-shadow: 0 0 10px var(--primary);
+        }
+
+        /* Mobile Menu Button */
+        .menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            color: var(--white);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 0.5rem;
+        }
+
+        /* Header Section */
+        #header {
+            margin-top: 70px;
+            padding: var(--spacing-lg) var(--spacing-md);
+            text-align: center;
+            background: linear-gradient(180deg, var(--gray-dark) 0%, var(--black) 100%);
+            border-bottom: 3px solid var(--primary);
+        }
+
+        #header h1 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        #header .subtitle {
+            font-family: var(--font-accent);
+            font-size: clamp(1rem, 2vw, 1.5rem);
+            color: var(--secondary);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+        }
+
+        /* Section Styling */
+        section {
+            padding: var(--spacing-lg) var(--spacing-md);
+            position: relative;
+        }
+
+        section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-title {
+            margin-bottom: var(--spacing-md);
+            color: var(--primary);
+        }
+
+        /* Bio Section */
+        #bio {
+            background-color: var(--black);
+        }
+
+        .bio-versions {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-lg);
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .bio-version {
+            background: var(--gray-dark);
+            border: 3px solid var(--secondary);
+            padding: 2rem;
+        }
+
+        .bio-version h4 {
+            color: var(--secondary);
+            margin-bottom: 1rem;
+            font-family: var(--font-accent);
+        }
+
+        .bio-version p {
+            margin-bottom: 1rem;
+        }
+
+        .bio-version p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Music Section */
+        #music {
+            background-color: var(--gray-dark);
+        }
+
+        .music-grid {
+            display: grid;
+            gap: var(--spacing-md);
+        }
+
+        .video-container {
+            position: relative;
+            padding-bottom: 56.25%;
+            height: 0;
+            overflow: hidden;
+            border: 3px solid var(--secondary);
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        .video-label {
+            font-family: var(--font-accent);
+            color: var(--secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 1rem;
+            font-size: 1rem;
+        }
+
+        /* Photos Section */
+        #photos {
+            background-color: var(--black);
+        }
+
+        .photo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .photo-grid img {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+            border: 3px solid var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .photo-grid img:hover {
+            transform: scale(1.05);
+            filter: hue-rotate(15deg);
+            box-shadow: 0 0 30px var(--primary);
+        }
+
+        .photo-placeholder {
+            width: 100%;
+            height: 300px;
+            background: var(--gray-medium);
+            border: 3px solid var(--gray-light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-accent);
+            color: var(--gray-light);
+            font-size: 1.25rem;
+        }
+
+        /* Setlist Section */
+        #setlist {
+            background-color: var(--gray-dark);
+        }
+
+        .setlist-columns {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .setlist-column {
+            background: var(--black);
+            border: 2px solid var(--primary);
+            padding: 1.5rem;
+        }
+
+        .setlist-column h4 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .setlist-column ul {
+            list-style: none;
+        }
+
+        .setlist-column li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--gray-medium);
+            font-family: var(--font-accent);
+            font-size: 0.95rem;
+        }
+
+        .setlist-column li:last-child {
+            border-bottom: none;
+        }
+
+        /* Contact Section */
+        #contact {
+            background-color: var(--black);
+        }
+
+        .contact-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--spacing-lg);
+            text-align: center;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .contact-info h3 {
+            color: var(--primary);
+            margin-bottom: 1rem;
+        }
+
+        .contact-info p {
+            margin: 0 auto 1rem;
+        }
+
+        .contact-email {
+            font-family: var(--font-accent);
+            font-size: 1.25rem;
+            display: inline-block;
+            padding: 1rem 2rem;
+            background: var(--gray-medium);
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            margin-top: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .contact-email:hover {
+            background: var(--primary);
+            color: var(--white);
+            box-shadow: 0 0 30px var(--primary);
+        }
+
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .social-links a {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            background: var(--gray-medium);
+            border: 2px solid var(--secondary);
+            border-radius: 50%;
+            font-size: 1.5rem;
+            color: var(--secondary);
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            background: var(--secondary);
+            color: var(--black);
+            box-shadow: 0 0 30px var(--secondary);
+            transform: scale(1.1);
+        }
+
+        /* Footer */
+        footer {
+            background: var(--black);
+            border-top: 2px solid var(--primary);
+            padding: var(--spacing-md);
+            text-align: center;
+        }
+
+        footer p {
+            margin: 0 auto;
+            color: var(--gray-light);
+            font-family: var(--font-accent);
+            font-size: 0.875rem;
+        }
+
+        /* Animations */
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Scroll animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(50px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Print styles for EPK */
+        @media print {
+            nav, footer, .video-container {
+                display: none;
+            }
+
+            body {
+                background: white;
+                color: black;
+            }
+
+            section {
+                page-break-inside: avoid;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            nav ul {
+                position: fixed;
+                top: 70px;
+                left: -100%;
+                flex-direction: column;
+                background: rgba(10, 10, 10, 0.98);
+                width: 100%;
+                padding: 2rem;
+                gap: 1rem;
+                transition: left 0.3s ease;
+                border-top: 2px solid var(--primary);
+            }
+
+            nav ul.active {
+                left: 0;
+            }
+
+            .menu-toggle {
+                display: block;
+            }
+
+            .contact-content {
+                grid-template-columns: 1fr;
+            }
+
+            .setlist-columns {
+                grid-template-columns: 1fr;
+            }
+
+            section {
+                padding: var(--spacing-lg) var(--spacing-sm);
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="container">
+            <div class="logo">
+                <a href="index.html"><img src="assets/images/grimstone_text_optimized.webp" alt="Grimstone"></a>
+            </div>
+            <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">☰</button>
+            <ul id="navMenu">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="index.html#music">Music</a></li>
+                <li><a href="index.html#about">About</a></li>
+                <li><a href="index.html#contact">Contact</a></li>
+                <li><a href="press.html">Press Kit</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <section id="header">
+        <div class="container">
+            <h1>Electronic Press Kit</h1>
+            <p class="subtitle">Grimstone • Riverton, Utah</p>
+        </div>
+    </section>
+
+    <!-- Bio Section -->
+    <section id="bio">
+        <div class="container">
+            <h2 class="section-title fade-in">Band Bio</h2>
+            <div class="bio-versions">
+                <!-- Short Bio -->
+                <div class="bio-version fade-in">
+                    <h4>Short Version (Social Media)</h4>
+                    <p>Grimstone is a high-energy punk/alt-rock cover band from Riverton, Utah. Specializing in 90s and 2000s rock anthems with an attitude-driven edge, we bring the sound of Blink 182, Foo Fighters, The Killers, and Jimmy Eat World to life with a few creative twists thrown in.</p>
+                </div>
+
+                <!-- Medium Bio -->
+                <div class="bio-version fade-in">
+                    <h4>Medium Version (EPK Main Bio)</h4>
+                    <p>Grimstone is a Riverton, Utah-based rock band delivering high-octane performances of punk, alt-rock, and 90s/2000s favorites. Drawing from the era's defining acts (Blink 182, Green Day, Foo Fighters, The Killers, Weezer, Jimmy Eat World), the band combines tight musicianship with raw energy and attitude. Whether staying faithful to the originals or putting their own spin on classics, Grimstone brings an authentic rock experience to every show. With plans to begin writing original music in 2026, Grimstone is a band to watch in Utah's rock scene.</p>
+                </div>
+
+                <!-- Long Bio -->
+                <div class="bio-version fade-in">
+                    <h4>Long Version (Full Press Kit)</h4>
+                    <p>Grimstone is a five-piece rock band from Riverton, Utah, specializing in the punk, pop-punk, and alternative rock sounds that defined the 90s and 2000s. The band's setlist reads like a greatest-hits collection from the era: Blink 182, Green Day, Foo Fighters, The Killers, Weezer, Jimmy Eat World, The Strokes, and more.</p>
+                    <p>Formed by experienced musicians with a shared love for high-energy, guitar-driven rock, Grimstone delivers performances that balance technical precision with the raw attitude these songs demand. The band takes a flexible approach to their covers, some played close to the original, others reimagined with creative arrangements and genre-bending twists.</p>
+                    <p>Whether headlining a local venue, energizing a private event, or opening for touring acts, Grimstone brings an authentic rock experience built on solid musicianship and undeniable stage presence. As the band expands their repertoire and begins writing original material in 2026, they're positioned to become a fixture in Utah's rock scene and beyond.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Music Section -->
+    <section id="music">
+        <div class="container">
+            <h2 class="section-title fade-in">Music & Videos</h2>
+            <div class="music-grid">
+                <!-- Practice Session Video -->
+                <div class="fade-in">
+                    <p class="video-label">Recent Practice Session</p>
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/nqVWf1ivacI" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>
+                </div>
+
+                <!-- YouTube Playlist - Cover Highlights -->
+                <div class="fade-in">
+                    <p class="video-label">Cover Highlights Playlist</p>
+                    <div class="video-container">
+                        <iframe src="https://www.youtube.com/embed/videoseries?list=PLE2FyrlcS-kp4jtNcuLVovy5IT14thVfz" frameborder="0" allowfullscreen></iframe>
+                    </div>
+                </div>
+
+                <!-- Placeholder for Live Performance -->
+                <div class="fade-in">
+                    <p class="video-label">Live Performance (Coming Soon)</p>
+                    <div style="width: 100%; padding-bottom: 56.25%; background: var(--gray-medium); border: 3px solid var(--gray-light); display: flex; align-items: center; justify-content: center; position: relative;">
+                        <div style="position: absolute; font-family: var(--font-accent); color: var(--gray-light); font-size: 1.25rem;">Live performance video from birthday party gig - Coming Friday</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Photos Section -->
+    <section id="photos">
+        <div class="container">
+            <h2 class="section-title fade-in">Photos</h2>
+            <div class="photo-grid fade-in">
+                <!-- Placeholders for band photos -->
+                <div class="photo-placeholder">Band Photo 1<br><small>(Photo shoot scheduled)</small></div>
+                <div class="photo-placeholder">Band Photo 2<br><small>(Photo shoot scheduled)</small></div>
+                <div class="photo-placeholder">Band Photo 3<br><small>(Photo shoot scheduled)</small></div>
+                <div class="photo-placeholder">Action Shot<br><small>(Photo shoot scheduled)</small></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Setlist Section -->
+    <section id="setlist">
+        <div class="container">
+            <h2 class="section-title fade-in">Setlist Highlights</h2>
+            <div class="setlist-columns">
+                <div class="setlist-column fade-in">
+                    <h4>Recording-Ready Tracks</h4>
+                    <ul>
+                        <li>I Want You to Want Me</li>
+                        <li>Pet Cemetery</li>
+                        <li>All the Small Things</li>
+                        <li>Mr. Brightside</li>
+                        <li>Taking Care of Business</li>
+                        <li>Just What I Needed</li>
+                    </ul>
+                </div>
+
+                <div class="setlist-column fade-in">
+                    <h4>Core Repertoire</h4>
+                    <ul>
+                        <li>Blink 182 favorites</li>
+                        <li>Green Day classics</li>
+                        <li>Foo Fighters hits</li>
+                        <li>The Killers anthems</li>
+                        <li>Weezer singalongs</li>
+                        <li>Jimmy Eat World gems</li>
+                        <li>The Strokes energy</li>
+                        <li>Ramones punk attitude</li>
+                    </ul>
+                </div>
+
+                <div class="setlist-column fade-in">
+                    <h4>What Sets Us Apart</h4>
+                    <ul>
+                        <li>High-energy performances</li>
+                        <li>Tight musicianship</li>
+                        <li>90s/2000s authenticity</li>
+                        <li>Creative arrangements</li>
+                        <li>Genre-bending covers</li>
+                        <li>Original music in development</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section id="contact">
+        <div class="container">
+            <h2 class="section-title fade-in">Booking & Contact</h2>
+            <div class="contact-content">
+                <div class="contact-info fade-in">
+                    <h3>Book Grimstone</h3>
+                    <p>Available for venues, private events, festivals, and more. We bring high-energy performances and a killer setlist of 90s/2000s rock favorites.</p>
+                    <a href="mailto:grimm.bradley@gmail.com" class="contact-email">grimm.bradley@gmail.com</a>
+                    <a href="tel:+18018989541" class="contact-email" style="margin-top: 1rem;">801-898-9541</a>
+                </div>
+
+                <div class="contact-info fade-in">
+                    <h3>Connect With Us</h3>
+                    <p>Stay updated with our latest shows, recordings, and band news on our social platforms.</p>
+                    <div class="social-links">
+                        <a href="https://grimstones.bandcamp.com/" target="_blank" rel="noopener noreferrer" aria-label="Bandcamp">♫</a>
+                        <a href="https://www.youtube.com/@bradleygrimm" target="_blank" rel="noopener noreferrer" aria-label="YouTube">▶</a>
+                    </div>
+                    <p style="margin-top: 2rem; font-family: var(--font-accent); color: var(--secondary); font-size: 0.875rem;">
+                        Download this EPK: <a href="press.html" style="color: var(--primary);">grimstonemusic.com/press</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 Grimstone. All rights reserved. Built with attitude.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Wait for DOM to load
+        document.addEventListener('DOMContentLoaded', () => {
+            // Mobile menu toggle
+            const menuToggle = document.getElementById('menuToggle');
+            const navMenu = document.getElementById('navMenu');
+
+            menuToggle.addEventListener('click', () => {
+                navMenu.classList.toggle('active');
+            });
+
+            // Close menu when clicking a link
+            navMenu.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', () => {
+                    navMenu.classList.remove('active');
+                });
+            });
+
+            // Scroll animations
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -100px 0px'
+            };
+
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, observerOptions);
+
+            document.querySelectorAll('.fade-in').forEach(el => {
+                observer.observe(el);
+            });
+        });
+    </script>
+</body>
+</html>
