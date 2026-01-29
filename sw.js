@@ -1,10 +1,12 @@
 // Service Worker for Grimstone website
 // Provides offline support and caching
 
-const CACHE_NAME = 'grimstone-v1';
+const CACHE_NAME = 'grimstone-v2';
 const urlsToCache = [
     '/',
     '/index.html',
+    '/press.html',
+    '/tools/setlist-optimizer.html',
     'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700&family=Space+Grotesk:wght@400;700&display=swap'
 ];
 

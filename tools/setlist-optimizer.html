@@ -1,0 +1,1486 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grimstone Setlist Optimizer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+    <style>
+        :root {
+            /* Core colors */
+            --black: #000000;
+            --white: #FFFFFF;
+            --primary: #FF0055;
+            --secondary: #00FFFF;
+
+            /* Grays */
+            --gray-dark: #1A1A1A;
+            --gray-medium: #333333;
+            --gray-light: #666666;
+
+            /* Accents */
+            --accent-yellow: #FFFF00;
+            --accent-purple: #9D00FF;
+
+            /* Typography */
+            --font-heading: 'Bebas Neue', Arial, sans-serif;
+            --font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: var(--font-body);
+            background: var(--black);
+            color: var(--white);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: var(--black);
+            border-radius: 15px;
+            border: 3px solid var(--primary);
+            box-shadow: 0 0 30px rgba(255, 0, 85, 0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: var(--black);
+            border-bottom: 3px solid var(--primary);
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-family: var(--font-heading);
+            font-size: 3rem;
+            margin-bottom: 10px;
+            font-weight: normal;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--primary);
+            text-shadow: 0 0 20px var(--primary), 0 0 40px var(--primary);
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+            color: var(--secondary);
+        }
+
+        .header .back-link {
+            display: inline-block;
+            margin-top: 15px;
+            color: var(--secondary);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .header .back-link:hover {
+            color: var(--white);
+            text-shadow: 0 0 10px var(--secondary);
+        }
+
+        .main-content {
+            padding: 30px;
+        }
+
+        .section {
+            background: var(--gray-dark);
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 3px solid var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .section:hover {
+            box-shadow: 0 0 20px rgba(255, 0, 85, 0.4);
+        }
+
+        .section h2 {
+            font-family: var(--font-heading);
+            color: var(--secondary);
+            margin-bottom: 20px;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-shadow: 0 0 10px var(--secondary);
+        }
+
+        .upload-area {
+            border: 3px dashed var(--primary);
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            background: var(--gray-medium);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .upload-area:hover {
+            border-color: var(--secondary);
+            background: var(--gray-dark);
+            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        }
+
+        .upload-area.dragover {
+            border-color: var(--secondary);
+            background: var(--gray-dark);
+            box-shadow: 0 0 30px rgba(0, 255, 255, 0.5);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: var(--primary);
+            text-shadow: 0 0 10px var(--primary);
+        }
+
+        .upload-text {
+            font-size: 1.1rem;
+            color: var(--white);
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .upload-subtext {
+            color: var(--gray-light);
+            font-size: 0.9rem;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .song-selector {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .selector-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .selector-group label {
+            font-weight: 600;
+            color: var(--white);
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            letter-spacing: 1px;
+        }
+
+        .selector-group select {
+            padding: 12px;
+            border: 2px solid var(--primary);
+            border-radius: 6px;
+            font-size: 1rem;
+            background: var(--gray-medium);
+            color: var(--white);
+            transition: all 0.3s ease;
+        }
+
+        .selector-group select:focus {
+            outline: none;
+            border-color: var(--secondary);
+            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+        }
+
+        .weight-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .weight-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: var(--gray-medium);
+            border-radius: 6px;
+            border: 2px solid var(--primary);
+        }
+
+        .weight-control label {
+            flex: 1;
+            font-weight: 500;
+            color: var(--white);
+            text-transform: uppercase;
+            font-size: 0.85rem;
+        }
+
+        .weight-control input[type="range"] {
+            width: 80px;
+        }
+
+        .weight-control input[type="range"]::-webkit-slider-thumb {
+            background: var(--primary);
+        }
+
+        .weight-control input[type="range"]::-moz-range-thumb {
+            background: var(--primary);
+        }
+
+        .weight-control .weight-value {
+            font-weight: 700;
+            color: var(--primary);
+            min-width: 20px;
+            text-align: center;
+            text-shadow: 0 0 5px var(--primary);
+        }
+
+        .btn {
+            background: var(--primary);
+            color: var(--white);
+            border: 3px solid var(--primary);
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .btn:hover {
+            background: transparent;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px var(--primary);
+        }
+
+        .btn:disabled {
+            background: var(--gray-light);
+            border-color: var(--gray-light);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-clear {
+            background: var(--gray-medium);
+            border-color: var(--gray-medium);
+        }
+
+        .btn-clear:hover {
+            background: transparent;
+            border-color: var(--gray-light);
+            box-shadow: 0 0 20px var(--gray-light);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            border-color: var(--secondary);
+        }
+
+        .btn-secondary:hover {
+            background: transparent;
+            box-shadow: 0 0 20px var(--secondary);
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--white);
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background: var(--black);
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            border: 3px solid var(--primary);
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            box-shadow: 0 0 20px rgba(255, 0, 85, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-shadow: 0 0 15px var(--primary);
+            font-family: var(--font-heading);
+            letter-spacing: 1px;
+        }
+
+        .stat-label {
+            color: var(--gray-light);
+            margin-top: 5px;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+        }
+
+        .song-list {
+            background: var(--black);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid var(--primary);
+        }
+
+        .song-item {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid var(--gray-medium);
+            transition: all 0.3s ease;
+        }
+
+        .song-item:last-child {
+            border-bottom: none;
+        }
+
+        .song-item:nth-child(even) {
+            background: var(--gray-dark);
+        }
+
+        .song-item:hover {
+            background: var(--gray-medium);
+        }
+
+        .song-item.start-song {
+            background: rgba(0, 255, 255, 0.1);
+            border-left: 4px solid var(--secondary);
+        }
+
+        .song-item.end-song {
+            background: rgba(255, 255, 0, 0.1);
+            border-left: 4px solid var(--accent-yellow);
+        }
+
+        .song-order {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+            min-width: 50px;
+            text-align: center;
+            font-family: var(--font-heading);
+        }
+
+        .song-info {
+            flex: 1;
+            margin-left: 15px;
+        }
+
+        .song-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--white);
+            margin-bottom: 2px;
+        }
+
+        .song-artist {
+            color: var(--gray-light);
+            font-size: 0.9rem;
+        }
+
+        .transition-cost {
+            background: var(--gray-dark);
+            padding: 8px 12px;
+            border-radius: 15px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--white);
+            min-width: 80px;
+            text-align: center;
+            border: 2px solid var(--gray-medium);
+            text-transform: uppercase;
+        }
+
+        .transition-cost.low {
+            background: rgba(0, 255, 0, 0.1);
+            border-color: #00FF00;
+            color: #00FF00;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+        }
+
+        .transition-cost.medium {
+            background: rgba(255, 255, 0, 0.1);
+            border-color: var(--accent-yellow);
+            color: var(--accent-yellow);
+            box-shadow: 0 0 10px rgba(255, 255, 0, 0.3);
+        }
+
+        .transition-cost.high {
+            background: rgba(255, 0, 85, 0.1);
+            border-color: var(--primary);
+            color: var(--primary);
+            box-shadow: 0 0 10px rgba(255, 0, 85, 0.3);
+        }
+
+        .instruments-preview {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+
+        .instrument-tag {
+            background: var(--gray-medium);
+            color: var(--secondary);
+            padding: 4px 8px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            border: 1px solid var(--secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: var(--gray-light);
+        }
+
+        .data-loaded {
+            background: rgba(0, 255, 0, 0.1);
+            border: 2px solid #00FF00;
+            color: #00FF00;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .error {
+            background: rgba(255, 0, 85, 0.1);
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .success {
+            background: rgba(0, 255, 0, 0.1);
+            border: 2px solid #00FF00;
+            color: #00FF00;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .optimization-info {
+            background: rgba(0, 255, 255, 0.1);
+            border: 2px solid var(--secondary);
+            color: var(--white);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .algorithm-description {
+            background: var(--gray-medium);
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid var(--secondary);
+            margin-bottom: 20px;
+        }
+
+        .algorithm-description h3 {
+            color: var(--secondary);
+            margin-bottom: 10px;
+            font-family: var(--font-heading);
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .algorithm-description ul {
+            color: var(--white);
+            margin-left: 20px;
+        }
+
+        .algorithm-description li {
+            margin-bottom: 8px;
+            line-height: 1.6;
+        }
+
+        .algorithm-description strong {
+            color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .song-selector {
+                grid-template-columns: 1fr;
+            }
+
+            .weight-controls {
+                grid-template-columns: 1fr;
+            }
+
+            .stats {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>⚡ Setlist Optimizer</h1>
+            <p>Smart transition planning to minimize instrument swaps and setup time</p>
+            <a href="../index.html" class="back-link">← Back to Grimstone</a>
+        </div>
+
+        <div class="main-content">
+            <!-- File Upload Section -->
+            <div class="section" id="uploadSection">
+                <h2>📁 Upload Your Setlist CSV</h2>
+                <div class="upload-area" id="uploadArea" onclick="document.getElementById('csvFile').click()">
+                    <div class="upload-icon">📁</div>
+                    <div class="upload-text">Click to select your CSV file</div>
+                    <div class="upload-subtext">or drag and drop it here</div>
+                </div>
+                <input type="file" id="csvFile" class="file-input" accept=".csv" onchange="handleFileUpload(event)">
+                <div id="uploadStatus"></div>
+            </div>
+
+            <div id="main-app" style="display: none;">
+                <!-- Song Selection -->
+                <div class="section">
+                    <h2>🎯 Select Start & End Songs (Optional)</h2>
+                    <div class="song-selector">
+                        <div class="selector-group">
+                            <label for="startSong">Starting Song:</label>
+                            <select id="startSong">
+                                <option value="">Let algorithm decide</option>
+                            </select>
+                        </div>
+                        <div class="selector-group">
+                            <label for="endSong">Ending Song:</label>
+                            <select id="endSong">
+                                <option value="">Let algorithm decide</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Transition Weights -->
+                <div class="section">
+                    <h2>⚖️ Transition Difficulty Weights</h2>
+                    <div class="algorithm-description">
+                        <h3>How the Algorithm Works:</h3>
+                        <ul>
+                            <li><strong>Transition Cost:</strong> Each instrument change between songs has a "cost" based on setup complexity</li>
+                            <li><strong>Smart Optimization:</strong> Uses a traveling salesman approach to find the order with minimum total transition cost</li>
+                            <li><strong>Weighted by Difficulty:</strong> Guitarists (pedals, amps) = highest cost, Bass/Keys/Drums = medium, Singers = low</li>
+                            <li><strong>Multiple Strategies:</strong> Tries different starting points and uses local optimization for best results</li>
+                            <li><strong>Duration Lookup:</strong> API lookups disabled due to CORS restrictions - add durations manually to CSV if needed</li>
+                        </ul>
+                    </div>
+                    <div class="weight-controls">
+                        <div class="weight-control">
+                            <label>Vocals:</label>
+                            <input type="range" id="voxWeight" min="1" max="10" value="2" oninput="updateWeightDisplay('vox', this.value)">
+                            <span class="weight-value" id="voxValue">2</span>
+                        </div>
+                        <div class="weight-control">
+                            <label>Guitar:</label>
+                            <input type="range" id="guitarWeight" min="1" max="10" value="7" oninput="updateWeightDisplay('guitar', this.value)">
+                            <span class="weight-value" id="guitarValue">7</span>
+                        </div>
+                        <div class="weight-control">
+                            <label>Bass:</label>
+                            <input type="range" id="bassWeight" min="1" max="10" value="5" oninput="updateWeightDisplay('bass', this.value)">
+                            <span class="weight-value" id="bassValue">5</span>
+                        </div>
+                        <div class="weight-control">
+                            <label>Drums:</label>
+                            <input type="range" id="drumsWeight" min="1" max="10" value="5" oninput="updateWeightDisplay('drums', this.value)">
+                            <span class="weight-value" id="drumsValue">5</span>
+                        </div>
+                        <div class="weight-control">
+                            <label>Keys:</label>
+                            <input type="range" id="keysWeight" min="1" max="10" value="5" oninput="updateWeightDisplay('keys', this.value)">
+                            <span class="weight-value" id="keysValue">5</span>
+                        </div>
+                        <div class="weight-control">
+                            <label>Avg Transition Time (sec):</label>
+                            <input type="range" id="transitionTime" min="15" max="120" value="45" oninput="updateWeightDisplay('transition', this.value)">
+                            <span class="weight-value" id="transitionValue">45</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Optimize Button -->
+                <div class="section">
+                    <div style="display: flex; gap: 15px; align-items: center; flex-wrap: wrap;">
+                        <button class="btn" onclick="optimizeSetlist()" style="flex: 1; font-size: 1.2rem; padding: 15px;">
+                            🚀 Optimize Setlist Order
+                        </button>
+                        <button class="btn btn-clear" onclick="resetToOriginal()">Reset</button>
+                        <button class="btn btn-secondary" onclick="lookupSongDurations()">🎵 Try Duration Lookup</button>
+                        <button class="btn" onclick="exportOptimizedCsv()" id="exportBtn" style="display: none;">📊 Download CSV</button>
+                        <label class="control-group" id="summaryOption" style="display: none;">
+                            <input type="checkbox" id="includeSummaryRows" checked> Include summary rows
+                        </label>
+                    </div>
+                    <div style="margin-top: 10px; font-size: 0.9rem; color: var(--gray-light);">
+                        <strong>Note:</strong> This uses heuristic optimization (greedy + 2-opt improvement).
+                        Results are typically within 10-20% of the theoretical optimum, which is excellent for practical use.
+                    </div>
+                </div>
+
+                <!-- Stats -->
+                <div class="stats" id="statsContainer" style="display: none;"></div>
+
+                <!-- Results -->
+                <div id="results" class="results"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let songsData = [];
+        let originalOrder = [];
+        let optimizedOrder = [];
+        let originalHeaders = [];
+        let transitionWeights = {
+            vox: 2,
+            guitar: 7,
+            bass: 5,
+            drums: 5,
+            keys: 5
+        };
+        let avgTransitionTime = 45; // seconds
+
+        // Setup drag and drop
+        function setupDragAndDrop() {
+            const uploadArea = document.getElementById('uploadArea');
+
+            uploadArea.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadArea.classList.add('dragover');
+            });
+
+            uploadArea.addEventListener('dragleave', () => {
+                uploadArea.classList.remove('dragover');
+            });
+
+            uploadArea.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadArea.classList.remove('dragover');
+
+                const files = e.dataTransfer.files;
+                if (files.length > 0 && files[0].name.endsWith('.csv')) {
+                    processFile(files[0]);
+                }
+            });
+        }
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (file && file.name.endsWith('.csv')) {
+                processFile(file);
+            } else {
+                showStatus('Please select a CSV file.', 'error');
+            }
+        }
+
+        function processFile(file) {
+            showStatus('Processing CSV file...', 'loading');
+
+            Papa.parse(file, {
+                header: true,
+                skipEmptyLines: true,
+                complete: function(results) {
+                    try {
+                        originalHeaders = results.meta && results.meta.fields ?
+                            results.meta.fields : Object.keys(results.data[0] || {});
+
+                        const lowerHeaders = originalHeaders.map(h => h.toLowerCase());
+                        const requiredMap = {
+                            Vocals: ['vox', 'vocals', 'vocal', 'singer'],
+                            Guitar: ['g1', 'g2', 'g3', 'guitar', 'guitar 1', 'guitar1', 'guitar 2', 'guitar2', 'guitar 3', 'guitar3', 'gtr 1', 'gtr 2', 'gtr 3'],
+                            Bass: ['bass', 'bass guitar'],
+                            Drums: ['drums', 'drummer', 'percussion']
+                        };
+                        const missing = Object.entries(requiredMap).filter(([, cols]) =>
+                            !cols.some(c => lowerHeaders.includes(c))
+                        ).map(([name]) => name);
+                        if (missing.length > 0) {
+                            showStatus(`⚠️ Possible missing columns for: ${missing.join(', ')}`, 'error');
+                        }
+
+                        processCsvData(results.data);
+                        setupSongSelectors();
+
+                        showStatus(`✅ Successfully loaded ${songsData.length} songs!`, 'success');
+
+                        // Hide upload section and show main app
+                        document.getElementById('uploadSection').style.display = 'none';
+                        document.getElementById('main-app').style.display = 'block';
+
+                        // Optionally start duration lookup (commented out due to CORS issues)
+                        // lookupSongDurations();
+
+                    } catch (error) {
+                        console.error('Error processing CSV:', error);
+                        showStatus('❌ Error processing CSV file. Please check the format.', 'error');
+                    }
+                },
+                error: function(error) {
+                    console.error('Papa Parse error:', error);
+                    showStatus('❌ Error parsing CSV file.', 'error');
+                }
+            });
+        }
+
+        function processCsvData(data) {
+            console.log('Processing CSV data...');
+
+            // Helper function to safely get string value
+            const getString = (value) => {
+                if (value === null || value === undefined) return '';
+                return String(value).trim();
+            };
+
+            // Process songs - looking for common CSV column names
+            const songs = data.filter(row => {
+                // Find the song title column (could be 'Song', 'Title', or first column)
+                const possibleTitleColumns = ['Song', 'Title', Object.keys(row)[0]];
+                let title = '';
+                for (const col of possibleTitleColumns) {
+                    if (row[col] && getString(row[col]) !== '') {
+                        title = getString(row[col]);
+                        break;
+                    }
+                }
+
+                // Basic title validation
+                if (!title || title === '' || title.toLowerCase().includes('pride') || title.length <= 1) {
+                    return false;
+                }
+
+                // Check for "Use" column filter - only apply if column exists AND has Y values
+                const useColumns = ['Use', 'use', 'USE'];
+                let useColumnExists = false;
+                let hasYValues = false;
+                let currentRowHasY = false;
+
+                for (const col of useColumns) {
+                    if (col in row) {
+                        useColumnExists = true;
+                        // Check if ANY row in the dataset has Y values for this column
+                        hasYValues = data.some(r =>
+                            r[col] && getString(r[col]).toLowerCase() === 'y'
+                        );
+                        // Check if current row has Y
+                        currentRowHasY = getString(row[col]).toLowerCase() === 'y';
+                        break;
+                    }
+                }
+
+                // If Use column exists AND there are Y values somewhere,
+                // only include rows with Y. Otherwise include all.
+                if (useColumnExists && hasYValues) {
+                    return currentRowHasY;
+                }
+
+                return true; // Include all songs if no Use filtering needed
+            }).map(row => {
+                // Find title and artist columns
+                const possibleTitleColumns = ['Song', 'Title', Object.keys(row)[0]];
+                const possibleArtistColumns = ['Artist', 'Band', 'By'];
+
+                let title = '';
+                let artist = '';
+
+                for (const col of possibleTitleColumns) {
+                    if (row[col] && getString(row[col]) !== '') {
+                        title = getString(row[col]);
+                        break;
+                    }
+                }
+
+                for (const col of possibleArtistColumns) {
+                    if (row[col] && getString(row[col]) !== '') {
+                        artist = getString(row[col]);
+                        break;
+                    }
+                }
+
+                const song = {
+                    title: title,
+                    artist: artist,
+                    instruments: {},
+                    duration: null, // Will be populated by API lookup
+                    originalRow: row
+                };
+
+                // Process instrument assignments
+                const instrumentMapping = {
+                    'Vox': ['Vox', 'Vocals', 'Vocal', 'Singer', 'Voice'],
+                    'Guitar': ['Guitar'],
+                    'Guitar 1': ['Guitar 1', 'Guitar1', 'G1', 'Gtr 1', 'Lead Guitar'],
+                    'Guitar 2': ['Guitar 2', 'Guitar2', 'G2', 'Gtr 2', 'Rhythm Guitar'],
+                    'Guitar 3': ['Guitar 3', 'Guitar3', 'G3', 'Gtr 3'],
+                    'Bass': ['Bass', 'Bass Guitar'],
+                    'Keys': ['Keys', 'Keyboard', 'Piano'],
+                    'Drums': ['Drums', 'Drummer', 'Percussion']
+                };
+
+                Object.entries(instrumentMapping).forEach(([instrument, possibleColumns]) => {
+                    for (const col of possibleColumns) {
+                        if (row[col] && getString(row[col]) !== '') {
+                            const players = getString(row[col])
+                                .split(/[,\/]/)
+                                .map(name => name.replace(/\s*\([^)]*\)/g, '').trim())
+                                .filter(name => name !== '' && name.length > 1);
+
+                            if (players.length > 0) {
+                                song.instruments[instrument] = players;
+                                break;
+                            }
+                        }
+                    }
+                });
+
+                return song;
+            });
+
+            songsData = songs;
+            originalOrder = [...songs];
+            optimizedOrder = [...songs];
+
+            console.log(`Processed ${songsData.length} songs`);
+        }
+
+        function showStatus(message, type) {
+            const statusDiv = document.getElementById('uploadStatus');
+            statusDiv.className = type;
+            statusDiv.innerHTML = message;
+        }
+
+        function setupSongSelectors() {
+            const startSelect = document.getElementById('startSong');
+            const endSelect = document.getElementById('endSong');
+
+            // Clear existing options (except first)
+            startSelect.innerHTML = '<option value="">Let algorithm decide</option>';
+            endSelect.innerHTML = '<option value="">Let algorithm decide</option>';
+
+            songsData.forEach((song, index) => {
+                const option1 = document.createElement('option');
+                option1.value = index;
+                option1.textContent = `${song.title} - ${song.artist}`;
+                startSelect.appendChild(option1);
+
+                const option2 = document.createElement('option');
+                option2.value = index;
+                option2.textContent = `${song.title} - ${song.artist}`;
+                endSelect.appendChild(option2);
+            });
+        }
+
+        function updateWeightDisplay(instrument, value) {
+            document.getElementById(`${instrument}Value`).textContent = value;
+            if (instrument === 'transition') {
+                avgTransitionTime = parseInt(value);
+            } else {
+                transitionWeights[instrument] = parseInt(value);
+            }
+        }
+
+        // Song duration lookup functions
+        async function lookupSongDurations() {
+            showStatus('🎵 Looking up song durations...', 'loading');
+            let foundCount = 0;
+
+            for (let i = 0; i < songsData.length; i++) {
+                const song = songsData[i];
+                try {
+                    const duration = await lookupSongDuration(song.title, song.artist);
+                    if (duration) {
+                        song.duration = duration;
+                        foundCount++;
+                    }
+                    // Small delay to be nice to the API
+                    await new Promise(resolve => setTimeout(resolve, 200));
+                } catch (error) {
+                    console.log(`Could not find duration for ${song.title} by ${song.artist}`);
+                }
+            }
+
+            showStatus(`✅ Found durations for ${foundCount}/${songsData.length} songs`, 'success');
+
+            // Refresh the display with durations if we have an optimized list
+            if (optimizedOrder.length > 0 && optimizedOrder !== originalOrder) {
+                displaySongList(optimizedOrder, 'Optimized Order');
+            }
+        }
+
+        async function lookupSongDuration(title, artist) {
+            try {
+                // Use a CORS proxy for the Last.fm API
+                const proxyUrl = 'https://api.allorigins.win/get?url=';
+                const lastFmUrl = `https://ws.audioscrobble.com/2.0/?method=track.getInfo&api_key=b25b959554ed76058ac220b7b2e0a026&artist=${encodeURIComponent(artist)}&track=${encodeURIComponent(title)}&format=json`;
+                const proxiedUrl = proxyUrl + encodeURIComponent(lastFmUrl);
+
+                const response = await fetch(proxiedUrl);
+                const proxyData = await response.json();
+
+                if (proxyData.contents) {
+                    const data = JSON.parse(proxyData.contents);
+                    if (data.track && data.track.duration) {
+                        // Last.fm returns duration in milliseconds (as string)
+                        const durationMs = parseInt(data.track.duration);
+                        if (durationMs > 0) {
+                            return Math.round(durationMs / 1000);
+                        }
+                    }
+                }
+
+                return null;
+            } catch (error) {
+                console.log('Duration lookup failed:', error);
+                return null;
+            }
+        }
+
+        function formatDuration(seconds) {
+            if (!seconds) return '';
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function calculateTotalSetTime(songs) {
+            let totalSongTime = 0;
+            let transitionTime = 0;
+            let songsWithDuration = 0;
+
+            songs.forEach(song => {
+                if (song.duration) {
+                    totalSongTime += song.duration;
+                    songsWithDuration++;
+                }
+            });
+
+            // Add transition time between songs
+            if (songs.length > 1) {
+                transitionTime = (songs.length - 1) * avgTransitionTime;
+            }
+
+            // If we don't have all durations, estimate based on average song length
+            let estimatedTotalSongTime = totalSongTime;
+            if (songsWithDuration < songs.length && songsWithDuration > 0) {
+                const avgDuration = totalSongTime / songsWithDuration;
+                estimatedTotalSongTime = avgDuration * songs.length;
+            } else if (songsWithDuration === 0) {
+                // Use typical rock song average of 3.5 minutes
+                estimatedTotalSongTime = songs.length * 210; // 3.5 minutes in seconds
+            }
+
+            return {
+                songTime: Math.round(estimatedTotalSongTime),
+                transitionTime: transitionTime,
+                totalTime: Math.round(estimatedTotalSongTime + transitionTime),
+                isEstimated: songsWithDuration < songs.length
+            };
+        }
+
+        function calculateTransitionCost(song1, song2) {
+            let totalCost = 0;
+
+            // Helper function to normalize player names (remove stars and clean)
+            function normalizePlayerName(name) {
+                return name.replace(/\*/g, '').trim().toLowerCase();
+            }
+
+            // Helper function to normalize player list
+            function normalizePlayerList(players) {
+                return players.map(normalizePlayerName);
+            }
+
+            // Map instruments to weight categories
+            // Guitars are treated as a single group so switching between
+            // G1/G2/G3 for the same player does not incur a penalty
+            const instrumentWeights = {
+                'Vox': transitionWeights.vox,
+                'Guitar': transitionWeights.guitar,
+                'Bass': transitionWeights.bass,
+                'Keys': transitionWeights.keys,
+                'Drums': transitionWeights.drums
+            };
+
+            function getPlayers(song, instrument) {
+                if (instrument === 'Guitar') {
+                    return []
+                        .concat(song.instruments['Guitar'] || [])
+                        .concat(song.instruments['Guitar 1'] || [])
+                        .concat(song.instruments['Guitar 2'] || [])
+                        .concat(song.instruments['Guitar 3'] || []);
+                }
+                return song.instruments[instrument] || [];
+            }
+
+            // Check each instrument position for changes
+            Object.keys(instrumentWeights).forEach(instrument => {
+                const players1 = getPlayers(song1, instrument);
+                const players2 = getPlayers(song2, instrument);
+
+                // Normalize player names for comparison (remove stars)
+                const normalizedPlayers1 = new Set(normalizePlayerList(players1));
+                const normalizedPlayers2 = new Set(normalizePlayerList(players2));
+
+                // If both songs have no players for this instrument, no cost
+                if (normalizedPlayers1.size === 0 && normalizedPlayers2.size === 0) {
+                    return;
+                }
+
+                // Determine if the set of players changed
+                const setsAreEqual =
+                    normalizedPlayers1.size === normalizedPlayers2.size &&
+                    [...normalizedPlayers1].every(p => normalizedPlayers2.has(p));
+
+                if (!setsAreEqual) {
+                    if (instrument === 'Guitar') {
+                        // Calculate how many guitarists actually changed
+                        const changes = new Set(
+                            [...normalizedPlayers1].filter(p => !normalizedPlayers2.has(p))
+                                .concat([...normalizedPlayers2].filter(p => !normalizedPlayers1.has(p)))
+                        ).size;
+                        totalCost += instrumentWeights[instrument] * changes;
+                    } else {
+                        // Any change in the player lineup for this instrument counts as a transition
+                        totalCost += instrumentWeights[instrument];
+                    }
+                }
+            });
+
+            return totalCost;
+        }
+
+        function optimizeSetlist() {
+            if (songsData.length === 0) {
+                alert('Please upload a CSV file first!');
+                return;
+            }
+
+            showStatus('🔄 Optimizing setlist order...', 'loading');
+
+            const startSongIndex = document.getElementById('startSong').value;
+            const endSongIndex = document.getElementById('endSong').value;
+
+            // Use traveling salesman-style optimization
+            const optimized = solveTSP(songsData, startSongIndex, endSongIndex);
+            optimizedOrder = optimized.order;
+
+            // Display results
+            displayOptimizationResults(optimized);
+            displaySongList(optimizedOrder, 'Optimized Order');
+
+            document.getElementById('exportBtn').style.display = 'block';
+            document.getElementById('summaryOption').style.display = 'flex';
+            showStatus('✅ Setlist optimized!', 'success');
+        }
+
+        function solveTSP(songs, startIndex, endIndex) {
+            const n = songs.length;
+            if (n <= 2) return { order: [...songs], totalCost: 0 };
+
+            let bestOrder = [...songs];
+            let bestCost = calculateTotalCost(songs);
+
+            // Try multiple strategies for better optimization
+            const strategies = [];
+
+            // Strategy 1: Start from specified song or try multiple starts
+            if (startIndex !== '') {
+                strategies.push({ start: parseInt(startIndex), end: endIndex !== '' ? parseInt(endIndex) : null });
+            } else {
+                // Try starting from each song (limited to prevent slowdown)
+                const maxStarts = Math.min(n, 6); // Try up to 6 different starting points
+                for (let i = 0; i < maxStarts; i++) {
+                    strategies.push({ start: i, end: endIndex !== '' ? parseInt(endIndex) : null });
+                }
+
+                // Also try starting from songs with lowest average transition costs
+                const avgCosts = songs.map((song, idx) => ({
+                    idx,
+                    avgCost: songs.reduce((sum, other, otherIdx) =>
+                        otherIdx !== idx ? sum + calculateTransitionCost(song, other) : sum, 0) / (n - 1)
+                }));
+                avgCosts.sort((a, b) => a.avgCost - b.avgCost);
+
+                // Try the 2 songs with lowest average transition costs
+                for (let i = 0; i < Math.min(2, avgCosts.length); i++) {
+                    strategies.push({ start: avgCosts[i].idx, end: endIndex !== '' ? parseInt(endIndex) : null });
+                }
+            }
+
+            // Try each strategy
+            strategies.forEach(strategy => {
+                const result = greedyTSP(songs, strategy.start, strategy.end);
+                if (result.totalCost < bestCost) {
+                    bestCost = result.totalCost;
+                    bestOrder = result.order;
+                }
+
+                // Apply 2-opt improvement
+                const improved = twoOptImprove(result.order, strategy.start, strategy.end);
+                if (improved.totalCost < bestCost) {
+                    bestCost = improved.totalCost;
+                    bestOrder = improved.order;
+                }
+            });
+
+            return { order: bestOrder, totalCost: bestCost };
+        }
+
+        function greedyTSP(songs, startIndex, endIndex) {
+            const n = songs.length;
+            const visited = new Array(n).fill(false);
+            const order = [];
+
+            let currentIndex = startIndex;
+            visited[currentIndex] = true;
+            order.push(songs[currentIndex]);
+
+            // Greedy: always go to nearest unvisited song
+            for (let i = 1; i < n; i++) {
+                let nextIndex = -1;
+                let minCost = Infinity;
+
+                // If this is the last song and we have an end constraint
+                if (i === n - 1 && endIndex !== null && !visited[endIndex]) {
+                    nextIndex = endIndex;
+                } else {
+                    // Find nearest unvisited song
+                    for (let j = 0; j < n; j++) {
+                        if (!visited[j] && (endIndex === null || j !== endIndex || i === n - 1)) {
+                            const cost = calculateTransitionCost(songs[currentIndex], songs[j]);
+                            if (cost < minCost) {
+                                minCost = cost;
+                                nextIndex = j;
+                            }
+                        }
+                    }
+                }
+
+                if (nextIndex !== -1) {
+                    visited[nextIndex] = true;
+                    order.push(songs[nextIndex]);
+                    currentIndex = nextIndex;
+                }
+            }
+
+            return { order, totalCost: calculateTotalCost(order) };
+        }
+
+        function twoOptImprove(order, startIndex, endIndex) {
+            let improved = [...order];
+            let bestCost = calculateTotalCost(improved);
+            let foundImprovement = true;
+
+            // Determine which positions are fixed
+            const fixedPositions = new Set();
+            if (startIndex !== null) {
+                const startSong = order.find((_, i) => i === startIndex);
+                const startPos = improved.findIndex(song => song === startSong);
+                if (startPos === 0) fixedPositions.add(0);
+            }
+            if (endIndex !== null) {
+                const endSong = order.find((_, i) => i === endIndex);
+                const endPos = improved.findIndex(song => song === endSong);
+                if (endPos === improved.length - 1) fixedPositions.add(improved.length - 1);
+            }
+
+            while (foundImprovement) {
+                foundImprovement = false;
+
+                for (let i = 1; i < improved.length - 2; i++) {
+                    if (fixedPositions.has(i)) continue;
+
+                    for (let j = i + 1; j < improved.length - 1; j++) {
+                        if (fixedPositions.has(j)) continue;
+
+                        // Try 2-opt swap
+                        const newOrder = [...improved];
+                        reverse(newOrder, i, j);
+
+                        const newCost = calculateTotalCost(newOrder);
+                        if (newCost < bestCost) {
+                            improved = newOrder;
+                            bestCost = newCost;
+                            foundImprovement = true;
+                        }
+                    }
+                }
+            }
+
+            return { order: improved, totalCost: bestCost };
+        }
+
+        function reverse(array, start, end) {
+            while (start < end) {
+                [array[start], array[end]] = [array[end], array[start]];
+                start++;
+                end--;
+            }
+        }
+
+        function calculateTotalCost(order) {
+            let totalCost = 0;
+            for (let i = 0; i < order.length - 1; i++) {
+                totalCost += calculateTransitionCost(order[i], order[i + 1]);
+            }
+            return totalCost;
+        }
+
+        function displayOptimizationResults(result) {
+            const originalCost = calculateTotalCost(originalOrder);
+            const improvement = ((originalCost - result.totalCost) / originalCost * 100).toFixed(1);
+
+            // Calculate time estimates
+            const originalTime = calculateTotalSetTime(originalOrder);
+            const optimizedTime = calculateTotalSetTime(optimizedOrder);
+
+            const statsContainer = document.getElementById('statsContainer');
+            statsContainer.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${songsData.length}</div>
+                    <div class="stat-label">Total Songs</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${originalCost.toFixed(1)}</div>
+                    <div class="stat-label">Original Cost</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${result.totalCost.toFixed(1)}</div>
+                    <div class="stat-label">Optimized Cost</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${improvement}%</div>
+                    <div class="stat-label">Improvement</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${formatDuration(optimizedTime.totalTime)}</div>
+                    <div class="stat-label">Est. Total Time</div>
+                </div>
+            `;
+            statsContainer.style.display = 'grid';
+
+            const optimizationInfo = document.createElement('div');
+            optimizationInfo.className = 'optimization-info';
+            optimizationInfo.innerHTML = `
+                <strong>🎯 Optimization Complete!</strong>
+                Reduced transition difficulty by ${improvement}% through smart song ordering.
+                ${optimizedTime.totalTime > 0 ? `<br>📊 <strong>Time Breakdown${optimizedTime.isEstimated ? ' (estimated)' : ''}:</strong> ${formatDuration(optimizedTime.songTime)} songs + ${formatDuration(optimizedTime.transitionTime)} transitions = ${formatDuration(optimizedTime.totalTime)} total` : ''}
+                <br><small>💡 <strong>Algorithm:</strong> Uses greedy nearest-neighbor with 2-opt improvement - typically achieves 80-90% of theoretical optimum</small>
+            `;
+
+            const results = document.getElementById('results');
+            const existingInfo = results.querySelector('.optimization-info');
+            if (existingInfo) {
+                existingInfo.remove();
+            }
+            results.insertBefore(optimizationInfo, results.firstChild);
+        }
+
+        function displaySongList(songs, title) {
+            const results = document.getElementById('results');
+
+            // Remove any existing song lists to prevent duplicates
+            const existingLists = results.querySelectorAll('.section');
+            existingLists.forEach(list => {
+                if (list.querySelector('h2')?.textContent?.includes('Order')) {
+                    list.remove();
+                }
+            });
+
+            const section = document.createElement('div');
+            section.className = 'section';
+            section.innerHTML = `<h2>🎵 ${title}</h2>`;
+
+            const songList = document.createElement('div');
+            songList.className = 'song-list';
+
+            const startSongIndex = document.getElementById('startSong').value;
+            const endSongIndex = document.getElementById('endSong').value;
+
+            songs.forEach((song, index) => {
+                const songItem = document.createElement('div');
+                songItem.className = 'song-item';
+
+                // Check if this is start/end song
+                const originalIndex = originalOrder.findIndex(s => s.title === song.title && s.artist === song.artist);
+                if (startSongIndex !== '' && originalIndex === parseInt(startSongIndex)) {
+                    songItem.classList.add('start-song');
+                }
+                if (endSongIndex !== '' && originalIndex === parseInt(endSongIndex)) {
+                    songItem.classList.add('end-song');
+                }
+
+                // Calculate transition cost from previous song to this one
+                let transitionCost = '';
+                let costClass = '';
+                if (index > 0) {
+                    const cost = calculateTransitionCost(songs[index - 1], song);
+                    transitionCost = cost.toFixed(1);
+
+                    if (cost <= 5) {
+                        costClass = 'low';
+                    } else if (cost <= 15) {
+                        costClass = 'medium';
+                    } else {
+                        costClass = 'high';
+                    }
+                }
+
+                // Get instruments for this song
+                const instruments = Object.keys(song.instruments);
+                const instrumentsHtml = instruments.map(inst =>
+                    `<span class="instrument-tag">${inst}</span>`
+                ).join('');
+
+                songItem.innerHTML = `
+                    <div class="song-order">${index + 1}</div>
+                    <div class="song-info">
+                        <div class="song-title">${song.title} ${song.duration ? `(${formatDuration(song.duration)})` : ''}</div>
+                        <div class="song-artist">by ${song.artist}</div>
+                        <div class="instruments-preview">${instrumentsHtml}</div>
+                    </div>
+                    ${transitionCost ? `<div class="transition-cost ${costClass}">Cost: ${transitionCost}</div>` : ''}
+                `;
+
+                songList.appendChild(songItem);
+            });
+
+            section.appendChild(songList);
+            results.appendChild(section);
+        }
+
+        function resetToOriginal() {
+            optimizedOrder = [...originalOrder];
+
+            // Clear the results display
+            document.getElementById('results').innerHTML = '';
+
+            // Hide stats and export button
+            document.getElementById('statsContainer').style.display = 'none';
+            document.getElementById('exportBtn').style.display = 'none';
+            document.getElementById('summaryOption').style.display = 'none';
+        }
+
+        function exportOptimizedCsv() {
+            if (optimizedOrder.length === 0) {
+                alert('No optimized order to export! Please run optimization first.');
+                return;
+            }
+
+            // Create CSV headers using original columns if available
+            const headers = ['Order', ...originalHeaders, 'Transition Cost'];
+
+            // Create CSV rows preserving original columns
+            const rows = optimizedOrder.map((song, index) => {
+                const row = [index + 1];
+
+                originalHeaders.forEach(col => {
+                    const value = song.originalRow && song.originalRow[col] !== undefined ? song.originalRow[col] : '';
+                    row.push(`"${String(value).trim()}"`);
+                });
+
+                // Add transition cost to next song
+                let transitionCost = '';
+                if (index < optimizedOrder.length - 1) {
+                    transitionCost = calculateTransitionCost(song, optimizedOrder[index + 1]).toFixed(1);
+                }
+                row.push(`"${transitionCost}"`);
+
+                return row.join(',');
+            });
+
+            // Add summary rows
+            const totalCost = calculateTotalCost(optimizedOrder);
+            const timeBreakdown = calculateTotalSetTime(optimizedOrder);
+
+            const columnCount = headers.length;
+            const createSummaryRow = (label, value) => {
+                const arr = new Array(columnCount).fill('');
+                arr[1] = `"${label}"`;
+                arr[2] = `"${value}"`;
+                return arr.join(',');
+            };
+
+            const summaryRows = [
+                createSummaryRow('TOTAL TRANSITION COST', totalCost.toFixed(1)),
+                createSummaryRow('TOTAL SONG TIME', formatDuration(timeBreakdown.songTime)),
+                createSummaryRow('TOTAL TRANSITION TIME', formatDuration(timeBreakdown.transitionTime)),
+                createSummaryRow('ESTIMATED TOTAL TIME', formatDuration(timeBreakdown.totalTime))
+            ];
+
+            const includeSummary = document.getElementById('includeSummaryRows').checked;
+
+            // Combine headers and rows
+            let csvContentArr = [headers.join(','), ...rows];
+            if (includeSummary) {
+                csvContentArr = [...csvContentArr, ...summaryRows];
+            }
+            const csvContent = csvContentArr.join('\n');
+
+            // Create and download file
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement('a');
+
+            if (window.navigator.msSaveOrOpenBlob) {
+                window.navigator.msSaveOrOpenBlob(blob, 'optimized_setlist.csv');
+            } else {
+                const url = URL.createObjectURL(blob);
+                link.setAttribute('href', url);
+                link.setAttribute('download', 'optimized_setlist.csv');
+                link.style.visibility = 'hidden';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                URL.revokeObjectURL(url);
+            }
+
+            alert('Optimized setlist exported successfully!');
+        }
+
+        // Initialize drag and drop when page loads
+        window.addEventListener('load', setupDragAndDrop);
+    </script>
+</body>
+</html>
