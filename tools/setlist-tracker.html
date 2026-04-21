@@ -597,8 +597,9 @@ updateVh();
   #mainAnnArea{
       display:flex; align-items:center; justify-content:center; gap:10px; margin:4px 0 8px;
   }
-  #mainAnnStars{ font-size:1.4em; color:#444; letter-spacing:2px; user-select:none; }
+  #mainAnnStars{ font-size:1.4em; color:#444; letter-spacing:2px; user-select:none; cursor:pointer; }
   #mainAnnStars.rated{ color:#ff9800; }
+  @media (display-mode: standalone){ #fullscreenBtn{ display:none !important; } }
   #mainAnnBtn{
       font-size:1.4em; background:none; border:none; color:#555; cursor:pointer;
       padding:4px 10px; border-radius:8px; touch-action:manipulation; line-height:1;
@@ -690,7 +691,6 @@ updateVh();
     <div id="currentSongDisplay"></div>
     <div id="mainAnnArea">
         <div id="mainAnnStars">☆☆☆☆☆</div>
-        <button id="mainAnnBtn" title="Practice notes">✎</button>
     </div>
     <div id="metronomeBeats">
         <div class="beat-pad beat-pad-one">1</div>
@@ -1195,7 +1195,7 @@ function loadState(){
             if(state.transitionTime) document.getElementById('transitionTime').value=state.transitionTime;
             if(state.endBy) document.getElementById('endBy').value=state.endBy;
             document.getElementById('autoDrop').checked=state.autoDropChecked||false;
-            document.getElementById('metronomeToggle').checked=state.metronome||false;
+            document.getElementById('metronomeToggle').checked = state.metronome !== false;
             if(state.bpm) currentBpm=state.bpm;
             lastSongAppliedBpm=state.lastSongAppliedBpm??-1;
             renderSetlist();
@@ -1927,6 +1927,7 @@ Stone in Love,Journey,4:26,118,Tuning: E,0
 Round and Round,Ratt,4:26,127,Tuning: Eb,0
 Rock and Roll All Nite,Kiss,2:57,138,Tuning: Eb (Live),0`;
 
+document.getElementById('metronomeToggle').checked = true; // default on; loadState overrides if explicitly saved off
 loadAnnotations();
 loadState();
 setMode(currentMode);
@@ -1959,7 +1960,7 @@ document.querySelectorAll('.ann-star').forEach(star => {
 document.querySelectorAll('.ann-chip').forEach(chip => {
     chip.addEventListener('click', () => chip.classList.toggle('active'));
 });
-document.getElementById('mainAnnBtn').addEventListener('click', () => openAnnotationPopup(currentIndex));
+document.getElementById('mainAnnStars').addEventListener('click', () => openAnnotationPopup(currentIndex));
 document.getElementById('muteBtn').addEventListener('click', toggleMute);
 // ── Tap Tempo ──────────────────────────────────────────────────────────────
 (function(){
