@@ -401,7 +401,7 @@ updateVh();
   }
   #metronomeToggleBtn:active{ transform:scale(0.95); }
 
-  /* ── BPM row (−  [input]  +) ───────────────────── */
+  /* ── BPM row layout ─────────────────────────────── */
   .metro-row{
       display:flex;
       align-items:center;
@@ -410,15 +410,30 @@ updateVh();
       flex-wrap:wrap;
       margin-bottom:8px;
   }
-  .bpm-row{
-      display:flex;
-      align-items:center;
-      gap:6px;
+  .metro-row--top{ gap:18px; margin-bottom:4px; }
+  .metro-row--controls{ gap:12px; margin-bottom:4px; }
+
+  /* ── Large in-controls BPM readout ─────────────── */
+  #bpmReadout{
+      font-size:3.2em;
+      font-weight:900;
+      color:#ff9800;
+      letter-spacing:0.06em;
+      line-height:1;
+      text-shadow:0 0 14px rgba(255,152,0,0.5);
+      min-width:3ch;
+      text-align:center;
+      pointer-events:none;
+      user-select:none;
   }
+  body.panel-hidden #bpmReadout{ font-size:3.6em; }
+
+  /* ── Fine-adjust buttons (±1) ───────────────────── */
   .bpm-adj{
-      font-size:1.9em;
-      width:54px;
-      height:54px;
+      font-size:1.4em;
+      font-weight:700;
+      width:64px;
+      height:64px;
       border-radius:50%;
       border:1px solid rgba(255,255,255,0.25);
       background:#1c1c1c;
@@ -430,23 +445,123 @@ updateVh();
       line-height:1;
       padding:0;
       transition:background 0.15s;
+      user-select:none;
+      -webkit-user-select:none;
+      touch-action:manipulation;
   }
   .bpm-adj:active{ background:#333; transform:scale(0.92); }
-  #bpmInput{
-      font-size:1.5em;
-      width:4.5em;
-      text-align:center;
-      background:#1a1a1a;
-      color:white;
-      border:1px solid rgba(255,255,255,0.25);
-      border-radius:8px;
-      padding:8px 4px;
-      min-height:54px;
+
+  /* ── Tap tempo button ───────────────────────────── */
+  #tapTempoBtn{
+      font-size:1.6em;
+      font-weight:900;
+      letter-spacing:0.08em;
+      min-width:130px;
+      min-height:76px;
+      border-radius:16px;
+      border:2px solid rgba(255,255,255,0.3);
+      background:#1a1a2e;
+      color:#ccc;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      transition:background 0.12s, color 0.12s, box-shadow 0.12s, transform 0.08s;
+      user-select:none;
+      -webkit-user-select:none;
+      touch-action:manipulation;
   }
+  #tapTempoBtn.tap-flash{
+      background:#2a2a4e;
+      color:#fff;
+      box-shadow:0 0 18px rgba(100,120,255,0.55) inset;
+      transform:scale(0.96);
+  }
+  #tapTempoBtn.tap-active{ border-color:#7abaff; color:#7abaff; }
+  body.panel-hidden #tapTempoBtn{ min-height:88px; min-width:150px; }
+
+  /* ── Hidden BPM input (kept for state save/load) ── */
+  #bpmInput{ display:none; }
 
   /* ── Drop-toggle in setlist (bigger touch target) ─ */
   .drop-toggle{ width:22px; height:22px; cursor:pointer; }
   .drop-order{ height:38px; font-size:1em; }
+
+  /* ── Practice / Performance mode toggle ─────────── */
+  #modeToggle{
+      display:flex; justify-content:center; margin:6px 0 4px;
+      border-radius:8px; overflow:hidden;
+      border:1px solid rgba(255,255,255,0.2); align-self:center; width:fit-content;
+  }
+  #modeToggle button{
+      font-size:0.85em; font-weight:700; letter-spacing:0.06em; text-transform:uppercase;
+      padding:7px 20px; background:#1a1a1a; color:#666; border:none; cursor:pointer;
+      transition:background 0.15s, color 0.15s; min-width:110px;
+  }
+  #modeToggle button:first-child{ border-right:1px solid rgba(255,255,255,0.15); }
+  body.practice-mode #modePracticeBtn{ background:#0d3d2e; color:#4caf50; }
+  body.practice-mode #modePerformanceBtn{ background:#1a1a1a; color:#666; }
+  body:not(.practice-mode) #modePerformanceBtn{ background:#1a2f4a; color:#7abaff; }
+  body:not(.practice-mode) #modePracticeBtn{ background:#1a1a1a; color:#666; }
+
+  body.practice-mode #aheadBehind{ display:none !important; }
+  body.practice-mode #timeRemaining{ display:none !important; }
+  body.practice-mode #timeLine{ display:none !important; }
+  body.practice-mode #dropBtn{ display:none !important; }
+  body.practice-mode .perf-only{ display:none !important; }
+  body.practice-mode .drop-order-label{ display:none !important; }
+
+  /* ── Annotations ─────────────────────────────────── */
+  #setlist li.ann-needs-pass{ border-left:4px solid #ff9800; }
+  #setlist li.playing.ann-needs-pass{ border-left:4px solid #ff9800; box-shadow:inset 3px 0 0 #0d6efd; }
+  .ann-pass-icon{ color:#ff9800; font-size:1.1em; margin-right:4px; }
+  .ann-note-inline{
+      display:block; font-size:0.82em; color:#aaa;
+      font-style:italic; margin-top:3px;
+      white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .ann-runs{ font-size:0.85em; color:#7abaff; min-width:28px; text-align:right; font-weight:bold; }
+
+  #currentSongAnnotation{ margin:6px 0 4px; }
+  #currentSongPassFlag{
+      font-size:1.05em; font-weight:700; color:#ff9800;
+      letter-spacing:0.05em; text-shadow:0 0 10px rgba(255,152,0,0.5);
+      animation:passFlash 2s ease-in-out infinite;
+  }
+  @keyframes passFlash{ 0%,100%{opacity:1} 50%{opacity:0.55} }
+  #currentSongNoteWrap{ font-size:0.95em; color:#ffcc80; margin:2px 0 6px; font-style:italic; }
+
+  #annotationModal{
+      position:fixed; inset:0; background:rgba(0,0,0,0.75);
+      display:flex; align-items:center; justify-content:center; z-index:2000;
+  }
+  #annotationModalInner{
+      background:#1e1e1e; border:1px solid rgba(255,255,255,0.15);
+      border-radius:12px; padding:24px 20px;
+      width:min(480px, 92vw); display:flex; flex-direction:column; gap:16px; color:white;
+  }
+  #annModalTitle{ font-size:1.2em; font-weight:700; margin-bottom:4px; }
+  #annPassLabel{ display:flex; align-items:center; gap:12px; font-size:1.1em; cursor:pointer; min-height:48px; }
+  #annNeedsPass{ width:28px; height:28px; cursor:pointer; accent-color:#ff9800; }
+  #annNote{
+      width:100%; min-height:80px; background:#111; color:white;
+      border:1px solid rgba(255,255,255,0.2); border-radius:8px;
+      padding:10px; font-size:1.05em; resize:vertical; box-sizing:border-box; font-family:inherit;
+  }
+  #annRunsRow{ font-size:1em; color:#7abaff; display:flex; align-items:center; gap:12px; }
+  #annRunsRow button{
+      font-size:0.85em; padding:6px 14px; background:#222; color:#bbb;
+      border:1px solid rgba(255,255,255,0.2); border-radius:6px; cursor:pointer; min-height:38px;
+  }
+  #annModalButtons{ display:flex; gap:12px; justify-content:flex-end; }
+  #annSaveBtn{
+      font-size:1.1em; padding:12px 28px; background:#1a3a1a; color:#4caf50;
+      border:1px solid #4caf50; border-radius:8px; cursor:pointer; min-height:52px; min-width:100px;
+  }
+  #annCancelBtn{
+      font-size:1.1em; padding:12px 28px; background:#222; color:#bbb;
+      border:1px solid rgba(255,255,255,0.2); border-radius:8px; cursor:pointer; min-height:52px; min-width:100px;
+  }
 </style>
 </head>
 <body>
@@ -455,6 +570,10 @@ updateVh();
 <div id="contentWrapper">
 <div id="infoColumn">
   <span id="timerDisplay">00:00</span>
+  <div id="modeToggle">
+    <button id="modePracticeBtn" onclick="setMode('practice')">Practice</button>
+    <button id="modePerformanceBtn" onclick="setMode('performance')">Performance</button>
+  </div>
   <div id="aheadBehind"></div>
   <div id="timeLine"></div>
   <div id="progressContainer"><div id="progressBar"></div></div>
@@ -462,20 +581,27 @@ updateVh();
     <div id="currentSongDisplay"></div>
     <div id="bpmBadge"></div>
     <div id="songNotesDisplay" style="text-align:center;margin-bottom:5px;"></div>
+    <div id="currentSongAnnotation" style="display:none;"><span id="currentSongPassFlag">⚠ NEEDS ANOTHER PASS</span></div>
+    <div id="currentSongNoteWrap" style="display:none;"><span id="currentSongNote"></span></div>
     <div id="nextSongDisplay"></div>
     <div id="timeRemaining" style="text-align:center;margin-bottom:10px;display:none;"></div>
     <div id="metadataLine"></div>
   </div>
   <div id="metronomeControls">
       <input type="checkbox" id="metronomeToggle" style="display:none">
-      <div class="metro-row">
+      <div class="metro-row metro-row--top">
           <button id="metronomeToggleBtn" onclick="toggleMetronome()">♩ METRO OFF</button>
-          <div class="bpm-row">
-              <button class="bpm-adj" onclick="adjustBpm(-5)">−</button>
-              <input type="number" id="bpmInput" value="120" min="30">
-              <button class="bpm-adj" onclick="adjustBpm(5)">+</button>
-          </div>
+          <div id="bpmReadout" aria-label="Current BPM">120</div>
       </div>
+      <div class="metro-row metro-row--controls">
+          <button class="bpm-adj" onclick="adjustBpm(-1)" aria-label="BPM minus 1">−1</button>
+          <button id="tapTempoBtn"
+                  aria-label="Tap tempo"
+                  ontouchstart="handleTapTempo(event)"
+                  onclick="handleTapTempo(event)">TAP</button>
+          <button class="bpm-adj" onclick="adjustBpm(1)" aria-label="BPM plus 1">+1</button>
+      </div>
+      <input type="number" id="bpmInput" value="120" min="30" style="display:none">
       <div id="metronomeBeats">
           <div class="metronomeBeat beat-1"></div>
           <div class="metronomeBeat beat-2"></div>
@@ -501,14 +627,33 @@ updateVh();
     </div>
     <div class="file-row">
         <label>Max Time (min): <input type="number" id="maxTime" value="60" min="1"></label>
-        <label>End By: <input type="time" id="endBy"></label>
-        <label>Transition (sec): <input type="number" id="transitionTime" value="60" min="0"></label>
-        <label><input type="checkbox" id="autoDrop"> Auto Drop</label>
+        <label class="perf-only">End By: <input type="time" id="endBy"></label>
+        <label class="perf-only">Transition (sec): <input type="number" id="transitionTime" value="60" min="0"></label>
+        <label class="perf-only"><input type="checkbox" id="autoDrop"> Auto Drop</label>
     </div>
 </div>
 </div>
 </div> <!-- contentWrapper -->
 </div>
+
+<div id="annotationModal" style="display:none;">
+  <div id="annotationModalInner">
+    <div id="annModalTitle"></div>
+    <label id="annPassLabel">
+      <input type="checkbox" id="annNeedsPass"> Needs Another Pass
+    </label>
+    <textarea id="annNote" placeholder="Note (e.g. timing in bridge)"></textarea>
+    <div id="annRunsRow">
+      Plays this session: <span id="annRuns">0</span>
+      <button onclick="clearRunCounter(parseInt(document.getElementById('annotationModal').dataset.idx))">Reset</button>
+    </div>
+    <div id="annModalButtons">
+      <button id="annCancelBtn" onclick="closeAnnotationModal()">Cancel</button>
+      <button id="annSaveBtn" onclick="saveAnnotationModal()">Save</button>
+    </div>
+  </div>
+</div>
+
 <script>
 function goFullscreen() {
     const elem = document.documentElement;
@@ -554,6 +699,84 @@ function toggleSongsPanel(){
 
 if(toggleBtn) toggleBtn.addEventListener('click', toggleSongsPanel);
 if(closeBtn) closeBtn.addEventListener('click', hideSongsPanel);
+
+// ── Practice / Performance mode ───────────────────────
+let currentMode = localStorage.getItem('sorTrackerMode') || 'performance';
+
+function setMode(mode){
+    currentMode = mode;
+    localStorage.setItem('sorTrackerMode', mode);
+    if(mode === 'practice'){
+        document.body.classList.add('practice-mode');
+    } else {
+        document.body.classList.remove('practice-mode');
+    }
+    const elapsed = startTime ? Math.floor(getElapsedMs()/1000*speedFactor) : 0;
+    updateDropBtn(elapsed);
+}
+
+// ── Annotations ───────────────────────────────────────
+let annotations = {};
+
+function annotationKey(title, artist){ return (title||'')+'|||'+(artist||''); }
+
+function loadAnnotations(){
+    try{ const raw=localStorage.getItem('sorAnnotations'); annotations=raw?JSON.parse(raw):{}; }
+    catch(e){ annotations={}; }
+}
+
+function saveAnnotations(){
+    try{ localStorage.setItem('sorAnnotations', JSON.stringify(annotations)); }catch(e){}
+}
+
+function getAnnotation(title, artist){
+    return annotations[annotationKey(title,artist)] || {needsPass:false, note:'', runs:0};
+}
+
+function setAnnotation(title, artist, patch){
+    const key=annotationKey(title,artist);
+    const existing=annotations[key]||{needsPass:false, note:'', runs:0};
+    annotations[key]=Object.assign({}, existing, patch);
+    saveAnnotations();
+}
+
+function openAnnotationModal(idx){
+    const song=songs[idx]; if(!song) return;
+    const ann=getAnnotation(song.title, song.artist);
+    const modal=document.getElementById('annotationModal');
+    document.getElementById('annModalTitle').textContent=`${song.title} — ${song.artist}`;
+    document.getElementById('annNeedsPass').checked=ann.needsPass;
+    document.getElementById('annNote').value=ann.note||'';
+    document.getElementById('annRuns').textContent=ann.runs;
+    modal.dataset.idx=idx;
+    modal.style.display='flex';
+}
+
+function closeAnnotationModal(){
+    document.getElementById('annotationModal').style.display='none';
+}
+
+function saveAnnotationModal(){
+    const modal=document.getElementById('annotationModal');
+    const idx=parseInt(modal.dataset.idx);
+    const song=songs[idx]; if(!song) return;
+    setAnnotation(song.title, song.artist, {
+        needsPass:document.getElementById('annNeedsPass').checked,
+        note:document.getElementById('annNote').value.trim()
+    });
+    closeAnnotationModal();
+    renderSetlist();
+    updateDisplay();
+}
+
+function clearRunCounter(idx){
+    const song=songs[idx]; if(!song) return;
+    setAnnotation(song.title, song.artist, {runs:0});
+    document.getElementById('annRuns').textContent='0';
+    const li=document.querySelector(`#setlist li[data-index="${idx}"]`);
+    if(li){ const b=li.querySelector('.ann-runs'); if(b) b.textContent=''; }
+}
+
 let songs = [];
 let timer = null;
 let startTime = null;
@@ -571,6 +794,30 @@ let currentBpm = 120;
 let metronomeTimer = null;
 let lastSongAppliedBpm = -1;
 let wakeLock = null;
+
+// ── Web Audio metronome ──────────────────────────────
+let audioCtx = null;
+let nextBeatTime = 0;
+let currentBeat = 0;
+const METRO_LOOKAHEAD = 0.10;   // seconds to look ahead per scheduler tick
+const METRO_INTERVAL_MS = 25;   // scheduler wake-up cadence in ms
+
+function ensureAudioContext(){
+    if(audioCtx) return audioCtx;
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    return audioCtx;
+}
+
+// Unlock Web Audio on first user touch (required by iOS Safari)
+document.addEventListener('touchstart', function unlockAudio(){
+    const ctx = ensureAudioContext();
+    if(ctx.state === 'suspended') ctx.resume();
+    const buf = ctx.createBuffer(1, 1, 22050);
+    const src = ctx.createBufferSource();
+    src.buffer = buf;
+    src.connect(ctx.destination);
+    src.start(0);
+}, { once: true, passive: true });
 
 async function requestWakeLock(){
     if('wakeLock' in navigator){
@@ -710,24 +957,66 @@ function formatClock(date){
     return date.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
 }
 
+function scheduleClick(beatIndex, when){
+    const ctx = ensureAudioContext();
+    const isOne = beatIndex === 0;
+    const freq  = isOne ? 1000 : 700;
+    const gain  = isOne ? 0.90 : 0.65;
+
+    const osc = ctx.createOscillator();
+    const env = ctx.createGain();
+    osc.connect(env);
+    env.connect(ctx.destination);
+
+    osc.type = 'sine';
+    osc.frequency.value = freq;
+
+    env.gain.setValueAtTime(0, when);
+    env.gain.linearRampToValueAtTime(gain, when + 0.002);
+    env.gain.exponentialRampToValueAtTime(0.0001, when + 0.060);
+
+    osc.start(when);
+    osc.stop(when + 0.065);
+    osc.onended = () => { osc.disconnect(); env.disconnect(); };
+}
+
 function startMetronome(){
-    if(metronomeTimer) clearInterval(metronomeTimer);
-    const beats=document.querySelectorAll('.metronomeBeat');
-    if(!beats.length) return;
-    let index=0;
-    const interval=60000/Math.max(1,currentBpm);
-    beats.forEach(b=>b.classList.remove('active'));
-    metronomeTimer=setInterval(()=>{
-        beats.forEach(b=>b.classList.remove('active'));
-        beats[index].classList.add('active');
-        index=(index+1)%beats.length;
-    },interval);
+    if(metronomeTimer){ clearTimeout(metronomeTimer); metronomeTimer = null; }
+    const ctx = ensureAudioContext();
+    if(ctx.state === 'suspended') ctx.resume();
+
+    currentBeat  = 0;
+    nextBeatTime = ctx.currentTime + 0.05;
+
+    const beats = document.querySelectorAll('.metronomeBeat');
+
+    function scheduler(){
+        const beatInterval = 60.0 / Math.max(1, currentBpm);
+        while(nextBeatTime < ctx.currentTime + METRO_LOOKAHEAD){
+            const beat = currentBeat;
+            scheduleClick(beat, nextBeatTime);
+
+            const delay = Math.max(0, (nextBeatTime - ctx.currentTime) * 1000);
+            (function(b, d){
+                setTimeout(() => {
+                    if(!document.getElementById('metronomeToggle').checked) return;
+                    beats.forEach(el => el.classList.remove('active'));
+                    if(beats[b]) beats[b].classList.add('active');
+                }, d);
+            })(beat, delay);
+
+            currentBeat  = (currentBeat + 1) % 4;
+            nextBeatTime += beatInterval;
+        }
+        metronomeTimer = setTimeout(scheduler, METRO_INTERVAL_MS);
+    }
+
+    scheduler();
 }
 
 function stopMetronome(){
-    if(metronomeTimer) clearInterval(metronomeTimer);
-    metronomeTimer=null;
-    document.querySelectorAll('.metronomeBeat').forEach(b=>b.classList.remove('active'));
+    if(metronomeTimer){ clearTimeout(metronomeTimer); metronomeTimer = null; }
+    document.querySelectorAll('.metronomeBeat').forEach(b => b.classList.remove('active'));
 }
 
 function setMetronomeBpm(bpm){
@@ -793,6 +1082,9 @@ document.getElementById('csvFile').addEventListener('change', e=>{
 });
 
 function loadSongs(data){
+    // Reset run counters but preserve flags and notes
+    songs.forEach(s=>{ const key=annotationKey(s.title,s.artist); if(annotations[key]) annotations[key].runs=0; });
+    saveAnnotations();
     songs = [];
     if(timer){
         clearInterval(timer);
@@ -846,14 +1138,21 @@ function renderSetlist(){
     songs.forEach((song,i)=>{
         song.start=cumulative;
         cumulative+=song.duration+transition;
+        const ann=getAnnotation(song.title, song.artist);
         const li=document.createElement('li');
         li.dataset.index=i;
-        li.innerHTML=`<div class="song-info"><label class="protect-label"><input type="checkbox" class="drop-toggle" data-idx="${i}" ${song.dropped?'':'checked'}></label> ${i+1}. ${song.title} - ${song.artist}</div>
+        if(ann.needsPass) li.classList.add('ann-needs-pass');
+        li.innerHTML=`<div class="song-info">
+                <label class="protect-label"><input type="checkbox" class="drop-toggle" data-idx="${i}" ${song.dropped?'':'checked'}></label>
+                ${ann.needsPass?'<span class="ann-pass-icon">⚠</span>':''}${i+1}. ${song.title} - ${song.artist}
+                ${ann.note?`<span class="ann-note-inline">${ann.note}</span>`:''}
+            </div>
             <div class="song-controls">
                 <span class="runtime">${formatTime(song.start)}</span>
                 <span class="time">${formatTime(song.duration)}</span>
                 <span class="bpm">${song.bpm?song.bpm+' BPM':''}</span>
-                <label class="priority-label">Drop <input type="number" class="drop-order" data-idx="${i}" min="0" value="${song.dropOrder}" style="width:3em"></label>
+                <span class="ann-runs">${ann.runs>0?'×'+ann.runs:''}</span>
+                <label class="priority-label drop-order-label">Drop <input type="number" class="drop-order" data-idx="${i}" min="0" value="${song.dropOrder}" style="width:3em"></label>
             </div>`;
         list.appendChild(li);
     });
@@ -878,6 +1177,14 @@ function renderSetlist(){
             if(!isNaN(val) && val>=0) songs[idx].dropOrder=val;
             saveState();
         });
+    });
+    document.querySelectorAll('#setlist li').forEach(li=>{
+        let pressTimer=null;
+        li.addEventListener('touchstart', e=>{
+            pressTimer=setTimeout(()=>{ pressTimer=null; openAnnotationModal(parseInt(li.dataset.index)); },500);
+        },{passive:true});
+        li.addEventListener('touchend', ()=>{ if(pressTimer){clearTimeout(pressTimer);pressTimer=null;} });
+        li.addEventListener('touchmove', ()=>{ if(pressTimer){clearTimeout(pressTimer);pressTimer=null;} });
     });
     document.getElementById('timeRemaining').textContent='';
     updateDisplay();
@@ -932,6 +1239,7 @@ function computeDroppedSongs(elapsed){
 function updateDropBtn(elapsed){
     const btn=document.getElementById('dropBtn');
     if(!btn) return;
+    if(currentMode === 'practice') return;
     if(autoDrop) btn.classList.remove('highlight');
     else btn.classList.add('highlight');
 
@@ -985,6 +1293,18 @@ function updateDisplay(){
     const notesEl=document.getElementById('songNotesDisplay');
     if(notesEl){
         notesEl.textContent=curSong && curSong.notes?curSong.notes:'';
+    }
+    const annFlagEl=document.getElementById('currentSongAnnotation');
+    const annNoteWrap=document.getElementById('currentSongNoteWrap');
+    const annNoteEl=document.getElementById('currentSongNote');
+    if(annFlagEl && curSong){
+        const ann=getAnnotation(curSong.title, curSong.artist);
+        annFlagEl.style.display=ann.needsPass?'block':'none';
+        if(annNoteEl) annNoteEl.textContent=ann.note||'';
+        if(annNoteWrap) annNoteWrap.style.display=ann.note?'block':'none';
+    } else {
+        if(annFlagEl) annFlagEl.style.display='none';
+        if(annNoteWrap) annNoteWrap.style.display='none';
     }
     const nextEl=document.getElementById('nextSongDisplay');
     if(nextEl){
@@ -1176,6 +1496,11 @@ function goNext(){
         let nextIndex = currentIndex + 1;
         while(nextIndex < songs.length && songs[nextIndex].dropped) nextIndex++;
         if(nextIndex < songs.length){
+            const leaving=songs[currentIndex];
+            const ann=getAnnotation(leaving.title, leaving.artist);
+            setAnnotation(leaving.title, leaving.artist, {runs:ann.runs+1});
+            const leavingLi=document.querySelector(`#setlist li[data-index="${currentIndex}"]`);
+            if(leavingLi){ const b=leavingLi.querySelector('.ann-runs'); if(b) b.textContent='×'+(ann.runs+1); }
             currentIndex = nextIndex;
             songStart = elapsed;
             startDiff[currentIndex] = elapsed - songs[currentIndex].start;
@@ -1241,7 +1566,9 @@ Stone in Love,Journey,4:26,118,Tuning: E,0
 Round and Round,Ratt,4:26,127,Tuning: Eb,0
 Rock and Roll All Nite,Kiss,2:57,138,Tuning: Eb (Live),0`;
 
+loadAnnotations();
 loadState();
+setMode(currentMode);
 if(songs.length === 0){
     Papa.parse(DEFAULT_SETLIST_CSV, {
         header: true,
@@ -1249,6 +1576,69 @@ if(songs.length === 0){
         complete: res => { loadSongs(res.data); }
     });
 }
+// ── Tap Tempo ──────────────────────────────────────────────────────────────
+(function(){
+    const TAP_TIMEOUT_MS = 3000;
+    const MAX_TAPS = 8;
+    let tapTimes = [];
+    let tapFlashTimer = null;
+
+    function median(arr){
+        const s = arr.slice().sort((a,b) => a-b);
+        const mid = Math.floor(s.length/2);
+        return s.length%2===0 ? (s[mid-1]+s[mid])/2 : s[mid];
+    }
+
+    function bpmFromTaps(times){
+        if(times.length < 2) return null;
+        const intervals = [];
+        for(let i=1; i<times.length; i++) intervals.push(times[i]-times[i-1]);
+        if(intervals.length === 1) return Math.round(60000/intervals[0]);
+        const med = median(intervals);
+        const clean = intervals.filter(iv => Math.abs(iv-med) <= 0.5*med);
+        const use = clean.length >= 1 ? clean : intervals;
+        const avg = use.reduce((a,b)=>a+b,0)/use.length;
+        return Math.round(60000/avg);
+    }
+
+    window.handleTapTempo = function(event){
+        if(event.type==='click' && window._tapTempoTouchFired){
+            window._tapTempoTouchFired = false;
+            return;
+        }
+        if(event.type==='touchstart') window._tapTempoTouchFired = true;
+
+        const now = Date.now();
+        if(tapTimes.length>0 && now-tapTimes[tapTimes.length-1]>TAP_TIMEOUT_MS) tapTimes=[];
+        tapTimes.push(now);
+        if(tapTimes.length>MAX_TAPS) tapTimes.shift();
+
+        const btn = document.getElementById('tapTempoBtn');
+        if(btn){
+            btn.classList.add('tap-flash');
+            if(tapFlashTimer) clearTimeout(tapFlashTimer);
+            tapFlashTimer = setTimeout(()=>btn.classList.remove('tap-flash'), 150);
+            if(tapTimes.length>=2) btn.classList.add('tap-active');
+        }
+
+        const bpm = bpmFromTaps(tapTimes);
+        if(bpm !== null){
+            setMetronomeBpm(Math.min(250, Math.max(30, bpm)));
+            saveState();
+        }
+    };
+})();
+
+// Keep #bpmReadout in sync via all paths that call updateBpmBadge
+(function(){
+    const _orig = updateBpmBadge;
+    updateBpmBadge = function(){
+        _orig();
+        const readout = document.getElementById('bpmReadout');
+        if(readout) readout.textContent = currentBpm || '';
+    };
+})();
+
 updateDropBtn(0);
 updateMetronomeBtn();
 updateBpmBadge();
