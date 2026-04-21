@@ -149,7 +149,7 @@ updateVh();
       margin-top:auto;
       margin-bottom:15px;
       position:relative;
-      z-index:200;
+      z-index:300;
   }
   #navControls button{
       font-size:1.5em;
@@ -187,38 +187,45 @@ updateVh();
       margin-bottom:10px;
   }
   #metronomeBeats{
-      display:flex;
-      justify-content:center;
-      gap:14px;
-      margin:16px auto 8px;
+      display:flex; align-items:center; justify-content:center;
+      gap:18px; margin:14px auto 10px;
   }
-  .metronomeBeat{
-      width:100px;
-      height:100px;
-      border-radius:50%;
-      opacity:0.15;
-      transition:opacity 0.08s;
+  .beat-pad{
+      width:72px; height:72px; border-radius:14px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:22px; font-weight:700; letter-spacing:0.01em;
+      user-select:none; -webkit-user-select:none;
+      background:#1e1e1e; color:#3a3a3a; border:2px solid #2a2a2a; box-shadow:none;
+      transition:background 80ms ease-out, color 80ms ease-out, border-color 80ms ease-out,
+                 box-shadow 80ms ease-out, transform 80ms ease-out;
+      transform:scale(1); will-change:transform,box-shadow,background;
+  }
+  .beat-pad.beat-pad-one{ background:#231a0e; color:#4a3820; border-color:#3d2e14; }
+  .beat-pad.active{
+      background:#0a1f3d; color:#e8f4ff; border-color:#2979ff;
+      box-shadow:0 0 0 2px #2979ff, 0 0 14px 4px rgba(41,121,255,0.55), 0 0 32px 8px rgba(41,121,255,0.25);
+      transform:scale(1.06);
+  }
+  .beat-pad.beat-pad-one.active{
+      background:#2b1700; color:#ffe0a0; border-color:#ff9500;
+      box-shadow:0 0 0 2px #ff9500, 0 0 16px 5px rgba(255,149,0,0.65), 0 0 38px 10px rgba(255,100,0,0.30);
+      transform:scale(1.12);
+      animation:beat-one-pop 160ms ease-out forwards;
+  }
+  @keyframes beat-one-pop{
+      0%{ transform:scale(1.12); }
+      40%{ transform:scale(1.20); }
+      100%{ transform:scale(1.12); }
+  }
+  @keyframes beat-one-pop-sm{
+      0%{ transform:scale(1.12); }
+      40%{ transform:scale(1.18); }
+      100%{ transform:scale(1.12); }
   }
   @media(max-width:600px){
-      .metronomeBeat{ width:72px; height:72px; }
-      #metronomeBeats{ gap:10px; }
-  }
-  .metronomeBeat.active{
-      opacity:1;
-      box-shadow:0 0 8px currentColor;
-  }
-  .metronomeBeat.beat-1,
-  .metronomeBeat.beat-3{ background:#0d6efd; }
-  .metronomeBeat.beat-2,
-  .metronomeBeat.beat-4{ background:#2ecc71; }
-  .metronomeBeat.beat-1{ box-shadow:0 0 5px #0d6efd; }
-  @keyframes pulse{
-      0%,100%{ transform:scale(1); }
-      50%{ transform:scale(1.1); }
-  }
-  .metronomeBeat.beat-1.active,
-  .metronomeBeat.beat-3.active{
-      animation:pulse 0.4s ease-in-out;
+      #metronomeBeats{ gap:12px; }
+      .beat-pad{ width:58px; height:58px; border-radius:11px; font-size:18px; }
+      .beat-pad.beat-pad-one.active{ animation:beat-one-pop-sm 160ms ease-out forwards; }
   }
   #fileControls{
       margin-top:20px;
@@ -312,9 +319,9 @@ updateVh();
   }
   .edge-nav{
       position:absolute;
-      top:110px;
-      bottom:170px;
-      width:40%;
+      top:0;
+      bottom:0;
+      width:38%;
       display:flex;
       align-items:flex-end;
       justify-content:center;
@@ -572,54 +579,92 @@ updateVh();
       font-style:italic; margin-top:3px;
       white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   }
-  .ann-runs{ font-size:0.85em; color:#7abaff; min-width:28px; text-align:right; font-weight:bold; }
-  .ann-edit-btn{
+.ann-edit-btn{
       background:none; border:none; color:#666; font-size:1em; cursor:pointer;
       padding:2px 6px; border-radius:4px; vertical-align:middle; line-height:1;
   }
   .ann-edit-btn:hover{ color:#ccc; }
   #setlist li.ann-needs-pass .ann-edit-btn{ color:#ff9800; }
 
-  #currentSongAnnotation{ margin:6px 0 4px; }
-  #currentSongPassFlag{
-      font-size:1.05em; font-weight:700; color:#ff9800;
-      letter-spacing:0.05em; text-shadow:0 0 10px rgba(255,152,0,0.5);
-      animation:passFlash 2s ease-in-out infinite;
-  }
-  @keyframes passFlash{ 0%,100%{opacity:1} 50%{opacity:0.55} }
-  #currentSongNoteWrap{ font-size:0.95em; color:#ffcc80; margin:2px 0 6px; font-style:italic; }
+  #muteBtn.muted{ opacity:0.45; }
 
-  #annotationModal{
-      position:fixed; inset:0; background:rgba(0,0,0,0.75);
-      display:flex; align-items:center; justify-content:center; z-index:2000;
+  /* ── Main screen annotation area ───────────────────── */
+  #mainAnnArea{
+      display:flex; align-items:center; justify-content:center; gap:10px; margin:4px 0 8px;
   }
-  #annotationModalInner{
-      background:#1e1e1e; border:1px solid rgba(255,255,255,0.15);
-      border-radius:12px; padding:24px 20px;
-      width:min(480px, 92vw); display:flex; flex-direction:column; gap:16px; color:white;
+  #mainAnnStars{ font-size:1.4em; color:#444; letter-spacing:2px; user-select:none; }
+  #mainAnnStars.rated{ color:#ff9800; }
+  #mainAnnBtn{
+      font-size:1.4em; background:none; border:none; color:#555; cursor:pointer;
+      padding:4px 10px; border-radius:8px; touch-action:manipulation; line-height:1;
+      transition:color 0.15s, background 0.15s;
   }
-  #annModalTitle{ font-size:1.2em; font-weight:700; margin-bottom:4px; }
-  #annPassLabel{ display:flex; align-items:center; gap:12px; font-size:1.1em; cursor:pointer; min-height:48px; }
-  #annNeedsPass{ width:28px; height:28px; cursor:pointer; accent-color:#ff9800; }
-  #annNote{
-      width:100%; min-height:80px; background:#111; color:white;
-      border:1px solid rgba(255,255,255,0.2); border-radius:8px;
-      padding:10px; font-size:1.05em; resize:vertical; box-sizing:border-box; font-family:inherit;
+  #mainAnnBtn:active{ color:#ccc; background:rgba(255,255,255,0.12); }
+
+  /* ── Annotation bottom sheet ────────────────────────── */
+  #annSheetOverlay{
+      display:none; position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:1900;
   }
-  #annRunsRow{ font-size:1em; color:#7abaff; display:flex; align-items:center; gap:12px; }
-  #annRunsRow button{
-      font-size:0.85em; padding:6px 14px; background:#222; color:#bbb;
-      border:1px solid rgba(255,255,255,0.2); border-radius:6px; cursor:pointer; min-height:38px;
+  #annSheetOverlay.open{ display:block; }
+  #annSheet{
+      display:none; position:fixed; bottom:0; left:0; right:0;
+      background:#1c1c1c; border-top:1px solid rgba(255,255,255,0.15);
+      border-radius:20px 20px 0 0; padding:20px 20px 36px;
+      z-index:2000; max-height:85vh; overflow-y:auto;
+      flex-direction:column; gap:14px;
+      box-shadow:0 -8px 40px rgba(0,0,0,0.7);
   }
-  #annModalButtons{ display:flex; gap:12px; justify-content:flex-end; }
-  #annSaveBtn{
-      font-size:1.1em; padding:12px 28px; background:#1a3a1a; color:#4caf50;
-      border:1px solid #4caf50; border-radius:8px; cursor:pointer; min-height:52px; min-width:100px;
+  #annSheet.open{ display:flex; }
+  #annSheetTitle{
+      font-size:1.1em; font-weight:700; text-align:center; color:#fff;
+      padding-bottom:10px; border-bottom:1px solid rgba(255,255,255,0.1);
   }
-  #annCancelBtn{
-      font-size:1.1em; padding:12px 28px; background:#222; color:#bbb;
-      border:1px solid rgba(255,255,255,0.2); border-radius:8px; cursor:pointer; min-height:52px; min-width:100px;
+  #annStarRow{ display:flex; justify-content:center; gap:4px; }
+  .ann-star{
+      font-size:2.4em; background:none; border:none; color:#333; cursor:pointer;
+      padding:2px 6px; touch-action:manipulation; line-height:1; transition:color 0.1s, transform 0.08s;
   }
+  .ann-star.active{ color:#ff9800; }
+  .ann-star:active{ transform:scale(1.25); }
+  #annChips{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; }
+  .ann-chip{
+      font-size:0.95em; font-weight:600; padding:9px 16px; border-radius:999px;
+      border:1px solid rgba(255,255,255,0.2); background:#1a1a1a; color:#777;
+      cursor:pointer; touch-action:manipulation;
+      transition:background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  .ann-chip.active{ background:#4a2a00; color:#ff9800; border-color:#ff9800; }
+  #annPracticeAgainBtn{
+      font-size:1em; font-weight:700; padding:12px; border-radius:10px;
+      border:1px solid rgba(255,255,255,0.15); background:#1a1a1a; color:#777;
+      cursor:pointer; touch-action:manipulation; text-align:center;
+      transition:background 0.15s, color 0.15s, border-color 0.15s;
+  }
+  #annPracticeAgainBtn.active{ background:#0d2a0d; color:#4caf50; border-color:#4caf50; }
+  #annNoteInput{
+      width:100%; background:#111; color:white;
+      border:1px solid rgba(255,255,255,0.15); border-radius:8px;
+      padding:10px; font-size:1em; box-sizing:border-box; font-family:inherit;
+  }
+  #annSheetActions{ display:flex; gap:10px; flex-wrap:wrap; }
+  #annSaveHistoryBtn, #annEmailBtn{
+      flex:1; font-size:0.9em; padding:10px; border-radius:8px;
+      border:1px solid rgba(255,255,255,0.2); background:#222; color:#bbb;
+      cursor:pointer; touch-action:manipulation; min-height:44px;
+  }
+  #annSheetClose{
+      font-size:1.1em; font-weight:700; padding:14px; border-radius:10px;
+      border:1px solid #4caf50; background:#0d2a0d; color:#4caf50;
+      cursor:pointer; touch-action:manipulation;
+  }
+  #annHistory{ font-size:0.85em; color:#888; }
+  #annHistory:not(:empty){
+      border-top:1px solid rgba(255,255,255,0.1); padding-top:10px;
+  }
+  .ann-history-entry{ margin-bottom:8px; padding:8px; background:#111; border-radius:6px; }
+  .ann-history-date{ color:#7abaff; font-size:0.9em; margin-bottom:3px; }
+  .ann-history-stars{ color:#ff9800; }
+  .ann-history-detail{ color:#ccc; margin-top:2px; }
 </style>
 </head>
 <body>
@@ -638,15 +683,17 @@ updateVh();
   <div id="centerInfo">
     <div id="countInDisplay"></div>
     <div id="currentSongDisplay"></div>
+    <div id="mainAnnArea">
+        <div id="mainAnnStars">☆☆☆☆☆</div>
+        <button id="mainAnnBtn" title="Practice notes">✎</button>
+    </div>
     <div id="metronomeBeats">
-        <div class="metronomeBeat beat-1"></div>
-        <div class="metronomeBeat beat-2"></div>
-        <div class="metronomeBeat beat-3"></div>
-        <div class="metronomeBeat beat-4"></div>
+        <div class="beat-pad beat-pad-one">1</div>
+        <div class="beat-pad">2</div>
+        <div class="beat-pad">3</div>
+        <div class="beat-pad">4</div>
     </div>
     <div id="songNotesDisplay" style="text-align:center;margin-bottom:5px;"></div>
-    <div id="currentSongAnnotation" style="display:none;"><span id="currentSongPassFlag">⚠ NEEDS ANOTHER PASS</span></div>
-    <div id="currentSongNoteWrap" style="display:none;"><span id="currentSongNote"></span></div>
     <div id="nextSongDisplay"></div>
     <div id="timeRemaining" style="text-align:center;margin-bottom:10px;display:none;"></div>
     <div id="metadataLine"></div>
@@ -670,6 +717,7 @@ updateVh();
       </div>
   </div>
   <div id="navControls">
+      <button id="muteBtn" class="icon-btn" title="Mute/Unmute click">🔊</button>
       <button id="startBtn" class="icon-btn">▶️</button>
       <button id="stopBtn" class="icon-btn" disabled>⏹️</button>
       <button id="dropBtn" class="icon-btn drop-btn" title="Drop Songs">❌🎵</button>
@@ -696,22 +744,32 @@ updateVh();
 </div> <!-- contentWrapper -->
 </div>
 
-<div id="annotationModal" style="display:none;">
-  <div id="annotationModalInner">
-    <div id="annModalTitle"></div>
-    <label id="annPassLabel">
-      <input type="checkbox" id="annNeedsPass"> Needs Another Pass
-    </label>
-    <textarea id="annNote" placeholder="Note (e.g. timing in bridge)"></textarea>
-    <div id="annRunsRow">
-      Plays this session: <span id="annRuns">0</span>
-      <button onclick="clearRunCounter(parseInt(document.getElementById('annotationModal').dataset.idx))">Reset</button>
+<div id="annSheetOverlay"></div>
+<div id="annSheet">
+    <div id="annSheetTitle"></div>
+    <div id="annStarRow">
+        <button class="ann-star" data-val="1">★</button>
+        <button class="ann-star" data-val="2">★</button>
+        <button class="ann-star" data-val="3">★</button>
+        <button class="ann-star" data-val="4">★</button>
+        <button class="ann-star" data-val="5">★</button>
     </div>
-    <div id="annModalButtons">
-      <button id="annCancelBtn" onclick="closeAnnotationModal()">Cancel</button>
-      <button id="annSaveBtn" onclick="saveAnnotationModal()">Save</button>
+    <div id="annChips">
+        <button class="ann-chip" data-section="intro">Intro</button>
+        <button class="ann-chip" data-section="verse">Verse</button>
+        <button class="ann-chip" data-section="chorus">Chorus</button>
+        <button class="ann-chip" data-section="transitions">Transitions</button>
+        <button class="ann-chip" data-section="solo">Solo</button>
+        <button class="ann-chip" data-section="outro">Outro</button>
     </div>
-  </div>
+    <button id="annPracticeAgainBtn">🔁 Practice Again</button>
+    <input id="annNoteInput" type="text" placeholder="Short note (optional)">
+    <div id="annSheetActions">
+        <button id="annSaveHistoryBtn">Save to History</button>
+        <button id="annEmailBtn">✉ Email Summary</button>
+    </div>
+    <div id="annHistory"></div>
+    <button id="annSheetClose">Done</button>
 </div>
 
 <script>
@@ -764,39 +822,74 @@ if(closeBtn) closeBtn.addEventListener('click', hideSongsPanel);
 function practiceStartSong(){
     const toggle = document.getElementById('metronomeToggle');
     toggle.checked = true;
-    startMetronome();
     updateMetronomeBtn();
     requestWakeLock();
     practiceIsCountingIn = true;
-    practiceCountBeat = 4;
     updateButtonStates();
-    runCountIn();
+    runVisualCountdown(5);
 }
 
-function runCountIn(){
+// Phase 1: silent 5→1 visual countdown at 1-second intervals
+function runVisualCountdown(n){
     const countEl = document.getElementById('countInDisplay');
     const songEl  = document.getElementById('currentSongDisplay');
-    if(practiceCountBeat <= 0){
-        practiceIsCountingIn = false;
-        practiceSongStart = Date.now();
-        if(countEl){ countEl.style.display = 'none'; countEl.textContent = ''; }
-        if(songEl){ songEl.style.display = ''; }
-        practiceTimer = setInterval(updateDisplay, 250);
-        updateButtonStates();
-        updateDisplay();
-        return;
-    }
+    if(n <= 0){ runAudioCountIn(); return; }
     if(countEl){
-        countEl.textContent = practiceCountBeat;
+        countEl.style.color = '#fff';
+        countEl.textContent = n;
         countEl.style.display = 'block';
-        // Retrigger animation on each beat
         countEl.style.animation = 'none';
-        countEl.offsetHeight; // reflow
+        countEl.offsetHeight;
         countEl.style.animation = '';
     }
     if(songEl) songEl.style.display = 'none';
-    practiceCountBeat--;
-    practiceCountTimer = setTimeout(runCountIn, 60000 / Math.max(1, currentBpm));
+    practiceCountTimer = setTimeout(() => runVisualCountdown(n - 1), 1000);
+}
+
+// Phase 2: 4 audible count-in clicks at song BPM (triangle 880Hz, different from metronome)
+function runAudioCountIn(){
+    const countEl = document.getElementById('countInDisplay');
+    const ctx = ensureAudioContext();
+    if(ctx.state === 'suspended') ctx.resume();
+
+    const beatInterval = 60.0 / Math.max(1, currentBpm);
+    const countInStart = ctx.currentTime + 0.05;
+
+    if(countEl) countEl.style.color = '#ff9800';
+
+    // First bar: hear the tempo. Second bar: click along with sticks.
+    for(let i = 0; i < 8; i++){
+        const when = countInStart + i * beatInterval;
+        scheduleCountInClick(when);
+        const delay = Math.max(0, (when - ctx.currentTime) * 1000);
+        (function(beatNum, d){
+            setTimeout(() => {
+                if(!practiceIsCountingIn) return;
+                if(countEl){
+                    countEl.textContent = beatNum;
+                    countEl.style.display = 'block';
+                    countEl.style.animation = 'none';
+                    countEl.offsetHeight;
+                    countEl.style.animation = '';
+                }
+            }, d);
+        })((i % 4) + 1, delay);
+    }
+
+    // Phase 3: start real metronome seamlessly after 8 count-in beats
+    const metroStartTime = countInStart + 8 * beatInterval;
+    practiceCountTimer = setTimeout(() => {
+        if(!practiceIsCountingIn) return;
+        practiceIsCountingIn = false;
+        practiceSongStart = Date.now();
+        if(countEl){ countEl.style.display = 'none'; countEl.textContent = ''; }
+        const songEl = document.getElementById('currentSongDisplay');
+        if(songEl) songEl.style.display = '';
+        startMetronome(metroStartTime);
+        practiceTimer = setInterval(updateDisplay, 250);
+        updateButtonStates();
+        updateDisplay();
+    }, (metroStartTime - ctx.currentTime) * 1000);
 }
 
 function practiceStopSong(){
@@ -831,6 +924,7 @@ function setMode(mode){
     }
     const elapsed = startTime ? Math.floor(getElapsedMs()/1000*speedFactor) : 0;
     updateDropBtn(elapsed);
+    updateDisplay();
 }
 
 // ── Annotations ───────────────────────────────────────
@@ -848,51 +942,106 @@ function saveAnnotations(){
 }
 
 function getAnnotation(title, artist){
-    return annotations[annotationKey(title,artist)] || {needsPass:false, note:'', runs:0};
+    const raw = annotations[annotationKey(title,artist)];
+    if(!raw) return {rating:0, practiceAgain:false, sections:[], note:'', history:[]};
+    return {
+        rating: raw.rating || 0,
+        practiceAgain: raw.practiceAgain !== undefined ? raw.practiceAgain : (raw.needsPass || false),
+        sections: raw.sections || [],
+        note: raw.note || '',
+        history: raw.history || []
+    };
 }
 
 function setAnnotation(title, artist, patch){
-    const key=annotationKey(title,artist);
-    const existing=annotations[key]||{needsPass:false, note:'', runs:0};
-    annotations[key]=Object.assign({}, existing, patch);
+    const key = annotationKey(title, artist);
+    const existing = getAnnotation(title, artist);
+    annotations[key] = Object.assign({}, existing, patch);
     saveAnnotations();
 }
 
-function openAnnotationModal(idx){
-    const song=songs[idx]; if(!song) return;
-    const ann=getAnnotation(song.title, song.artist);
-    const modal=document.getElementById('annotationModal');
-    document.getElementById('annModalTitle').textContent=`${song.title} — ${song.artist}`;
-    document.getElementById('annNeedsPass').checked=ann.needsPass;
-    document.getElementById('annNote').value=ann.note||'';
-    document.getElementById('annRuns').textContent=ann.runs;
-    modal.dataset.idx=idx;
-    modal.style.display='flex';
-}
+let _annSheetIdx = null;
 
-function closeAnnotationModal(){
-    document.getElementById('annotationModal').style.display='none';
-}
-
-function saveAnnotationModal(){
-    const modal=document.getElementById('annotationModal');
-    const idx=parseInt(modal.dataset.idx);
-    const song=songs[idx]; if(!song) return;
-    setAnnotation(song.title, song.artist, {
-        needsPass:document.getElementById('annNeedsPass').checked,
-        note:document.getElementById('annNote').value.trim()
+function openAnnotationPopup(idx){
+    const song = songs[idx]; if(!song) return;
+    _annSheetIdx = idx;
+    const ann = getAnnotation(song.title, song.artist);
+    document.getElementById('annSheetTitle').textContent = `${song.title} — ${song.artist}`;
+    document.querySelectorAll('.ann-star').forEach(s => {
+        s.classList.toggle('active', parseInt(s.dataset.val) <= ann.rating);
     });
-    closeAnnotationModal();
+    document.querySelectorAll('.ann-chip').forEach(c => {
+        c.classList.toggle('active', ann.sections.includes(c.dataset.section));
+    });
+    document.getElementById('annPracticeAgainBtn').classList.toggle('active', ann.practiceAgain);
+    document.getElementById('annNoteInput').value = ann.note || '';
+    renderAnnotationHistory(ann);
+    document.getElementById('annSheet').classList.add('open');
+    document.getElementById('annSheetOverlay').classList.add('open');
+}
+
+function closeAnnotationPopup(){
+    if(_annSheetIdx === null) return;
+    const song = songs[_annSheetIdx];
+    if(song){
+        const activeStars = Array.from(document.querySelectorAll('.ann-star.active'));
+        const rating = activeStars.length > 0 ? Math.max(...activeStars.map(s => parseInt(s.dataset.val))) : 0;
+        const sections = Array.from(document.querySelectorAll('.ann-chip.active')).map(c => c.dataset.section);
+        const practiceAgain = document.getElementById('annPracticeAgainBtn').classList.contains('active');
+        const note = document.getElementById('annNoteInput').value.trim();
+        setAnnotation(song.title, song.artist, {rating, sections, practiceAgain, note});
+    }
+    document.getElementById('annSheet').classList.remove('open');
+    document.getElementById('annSheetOverlay').classList.remove('open');
+    _annSheetIdx = null;
     renderSetlist();
     updateDisplay();
 }
 
-function clearRunCounter(idx){
-    const song=songs[idx]; if(!song) return;
-    setAnnotation(song.title, song.artist, {runs:0});
-    document.getElementById('annRuns').textContent='0';
-    const li=document.querySelector(`#setlist li[data-index="${idx}"]`);
-    if(li){ const b=li.querySelector('.ann-runs'); if(b) b.textContent=''; }
+function saveToHistory(){
+    if(_annSheetIdx === null) return;
+    const song = songs[_annSheetIdx]; if(!song) return;
+    const ann = getAnnotation(song.title, song.artist);
+    const activeStars = Array.from(document.querySelectorAll('.ann-star.active'));
+    const rating = activeStars.length > 0 ? Math.max(...activeStars.map(s => parseInt(s.dataset.val))) : 0;
+    const sections = Array.from(document.querySelectorAll('.ann-chip.active')).map(c => c.dataset.section);
+    const practiceAgain = document.getElementById('annPracticeAgainBtn').classList.contains('active');
+    const note = document.getElementById('annNoteInput').value.trim();
+    const entry = { date: new Date().toLocaleDateString(), rating, sections: [...sections], practiceAgain, note };
+    const history = [...(ann.history || []), entry];
+    setAnnotation(song.title, song.artist, {rating, sections, practiceAgain, note, history});
+    renderAnnotationHistory(getAnnotation(song.title, song.artist));
+}
+
+function renderAnnotationHistory(ann){
+    const el = document.getElementById('annHistory'); if(!el) return;
+    const history = ann.history || [];
+    if(history.length === 0){ el.innerHTML = ''; return; }
+    el.innerHTML = '<div style="font-weight:700;color:#bbb;margin-bottom:6px;">History</div>' +
+        history.slice().reverse().map(h => `<div class="ann-history-entry">
+            <div class="ann-history-date">${h.date}</div>
+            <div class="ann-history-stars">${'★'.repeat(h.rating||0)}${'☆'.repeat(5-(h.rating||0))}</div>
+            ${h.sections&&h.sections.length?`<div class="ann-history-detail">⚠ ${h.sections.join(', ')}</div>`:''}
+            ${h.note?`<div class="ann-history-detail">"${h.note}"</div>`:''}
+            ${h.practiceAgain?'<div class="ann-history-detail">🔁 Practice again</div>':''}
+        </div>`).join('');
+}
+
+function emailAllNotes(){
+    const lines = [];
+    songs.forEach(s => {
+        const ann = getAnnotation(s.title, s.artist);
+        if(ann.rating > 0 || ann.practiceAgain || ann.sections.length > 0 || ann.note){
+            lines.push(`${s.title} (${s.artist})`);
+            if(ann.rating) lines.push(`  Rating: ${'★'.repeat(ann.rating)}`);
+            if(ann.sections.length) lines.push(`  Needs work: ${ann.sections.join(', ')}`);
+            if(ann.practiceAgain) lines.push(`  → Practice again`);
+            if(ann.note) lines.push(`  Note: ${ann.note}`);
+            lines.push('');
+        }
+    });
+    if(lines.length === 0) lines.push('No notes yet.');
+    window.location.href = `mailto:?subject=${encodeURIComponent('Grimstone Practice Notes')}&body=${encodeURIComponent(lines.join('\n'))}`;
 }
 
 let songs = [];
@@ -912,6 +1061,27 @@ let currentBpm = 120;
 let metronomeTimer = null;
 let lastSongAppliedBpm = -1;
 let wakeLock = null;
+let masterGain = null;
+let isMuted = false;
+
+function getMasterGain(){
+    const ctx = ensureAudioContext();
+    if(!masterGain){
+        masterGain = ctx.createGain();
+        masterGain.gain.value = isMuted ? 0 : 1;
+        masterGain.connect(ctx.destination);
+    }
+    return masterGain;
+}
+
+function toggleMute(){
+    isMuted = !isMuted;
+    if(masterGain){
+        masterGain.gain.setValueAtTime(isMuted ? 0 : 1, ensureAudioContext().currentTime);
+    }
+    const btn = document.getElementById('muteBtn');
+    if(btn){ btn.textContent = isMuted ? '🔇' : '🔊'; btn.classList.toggle('muted', isMuted); }
+}
 
 // ── Practice mode state ───────────────────────────────
 let practiceSongStart = null;   // Date.now() when current song started (post count-in)
@@ -1091,7 +1261,7 @@ function scheduleClick(beatIndex, when){
     const osc = ctx.createOscillator();
     const env = ctx.createGain();
     osc.connect(env);
-    env.connect(ctx.destination);
+    env.connect(getMasterGain());
 
     osc.type = 'sine';
     osc.frequency.value = freq;
@@ -1105,31 +1275,73 @@ function scheduleClick(beatIndex, when){
     osc.onended = () => { osc.disconnect(); env.disconnect(); };
 }
 
-function startMetronome(){
+function scheduleCountInClick(when){
+    const ctx = ensureAudioContext();
+    const osc = ctx.createOscillator();
+    const env = ctx.createGain();
+    osc.connect(env);
+    env.connect(getMasterGain());
+    osc.type = 'triangle';
+    osc.frequency.value = 880;
+    env.gain.setValueAtTime(0, when);
+    env.gain.linearRampToValueAtTime(0.8, when + 0.002);
+    env.gain.exponentialRampToValueAtTime(0.0001, when + 0.075);
+    osc.start(when);
+    osc.stop(when + 0.080);
+    osc.onended = () => { osc.disconnect(); env.disconnect(); };
+}
+
+// ── RAF-based visual sync (audio-clock-locked, no setTimeout drift) ──
+let rafId = null;
+let lastLitBeat = -1;
+
+function startVisualLoop(){
+    if(rafId) cancelAnimationFrame(rafId);
+    lastLitBeat = -1;
+    function loop(){
+        const toggle = document.getElementById('metronomeToggle');
+        if(!toggle || !toggle.checked){ stopVisualLoop(); return; }
+        const ctx = ensureAudioContext();
+        const beatInterval = 60.0 / Math.max(1, currentBpm);
+        // nextBeatTime is when the NEXT beat fires; last beat fired beatInterval before that
+        const lastBeatAt = nextBeatTime - beatInterval;
+        const elapsed = ctx.currentTime - lastBeatAt;
+        const activeBeat = (currentBeat - 1 + 4) % 4;
+        const activeWindow = Math.min(beatInterval * 0.75, 0.30);
+        const pads = document.querySelectorAll('.beat-pad');
+        if(elapsed >= 0 && elapsed < activeWindow){
+            if(activeBeat !== lastLitBeat){
+                pads.forEach(el => el.classList.remove('active'));
+                if(pads[activeBeat]) pads[activeBeat].classList.add('active');
+                lastLitBeat = activeBeat;
+            }
+        } else if(elapsed >= activeWindow && lastLitBeat !== -1){
+            pads.forEach(el => el.classList.remove('active'));
+            lastLitBeat = -1;
+        }
+        rafId = requestAnimationFrame(loop);
+    }
+    rafId = requestAnimationFrame(loop);
+}
+
+function stopVisualLoop(){
+    if(rafId){ cancelAnimationFrame(rafId); rafId = null; }
+    document.querySelectorAll('.beat-pad').forEach(p => p.classList.remove('active'));
+    lastLitBeat = -1;
+}
+
+function startMetronome(startAtAudioTime){
     if(metronomeTimer){ clearTimeout(metronomeTimer); metronomeTimer = null; }
     const ctx = ensureAudioContext();
     if(ctx.state === 'suspended') ctx.resume();
 
     currentBeat  = 0;
-    nextBeatTime = ctx.currentTime + 0.05;
-
-    const beats = document.querySelectorAll('.metronomeBeat');
+    nextBeatTime = startAtAudioTime !== undefined ? startAtAudioTime : (ctx.currentTime + 0.05);
 
     function scheduler(){
         const beatInterval = 60.0 / Math.max(1, currentBpm);
         while(nextBeatTime < ctx.currentTime + METRO_LOOKAHEAD){
-            const beat = currentBeat;
-            scheduleClick(beat, nextBeatTime);
-
-            const delay = Math.max(0, (nextBeatTime - ctx.currentTime) * 1000);
-            (function(b, d){
-                setTimeout(() => {
-                    if(!document.getElementById('metronomeToggle').checked) return;
-                    beats.forEach(el => el.classList.remove('active'));
-                    if(beats[b]) beats[b].classList.add('active');
-                }, d);
-            })(beat, delay);
-
+            scheduleClick(currentBeat, nextBeatTime);
             currentBeat  = (currentBeat + 1) % 4;
             nextBeatTime += beatInterval;
         }
@@ -1137,11 +1349,12 @@ function startMetronome(){
     }
 
     scheduler();
+    startVisualLoop();
 }
 
 function stopMetronome(){
     if(metronomeTimer){ clearTimeout(metronomeTimer); metronomeTimer = null; }
-    document.querySelectorAll('.metronomeBeat').forEach(b => b.classList.remove('active'));
+    stopVisualLoop();
 }
 
 function setMetronomeBpm(bpm){
@@ -1207,9 +1420,6 @@ document.getElementById('csvFile').addEventListener('change', e=>{
 });
 
 function loadSongs(data){
-    // Reset run counters but preserve flags and notes
-    songs.forEach(s=>{ const key=annotationKey(s.title,s.artist); if(annotations[key]) annotations[key].runs=0; });
-    saveAnnotations();
     songs = [];
     if(timer){
         clearInterval(timer);
@@ -1266,18 +1476,17 @@ function renderSetlist(){
         const ann=getAnnotation(song.title, song.artist);
         const li=document.createElement('li');
         li.dataset.index=i;
-        if(ann.needsPass) li.classList.add('ann-needs-pass');
+        if(ann.practiceAgain) li.classList.add('ann-needs-pass');
         li.innerHTML=`<div class="song-info">
                 <label class="protect-label"><input type="checkbox" class="drop-toggle" data-idx="${i}" ${song.dropped?'':'checked'}></label>
-                ${ann.needsPass?'<span class="ann-pass-icon">⚠</span>':''}${i+1}. ${song.title} - ${song.artist}
-                <button class="ann-edit-btn" data-idx="${i}" title="Edit notes">✎</button>
+                ${ann.practiceAgain?'<span class="ann-pass-icon">🔁</span>':''}${i+1}. ${song.title} - ${song.artist}
+                <button class="ann-edit-btn" data-idx="${i}" title="Practice notes">✎</button>
                 ${ann.note?`<span class="ann-note-inline">${ann.note}</span>`:''}
             </div>
             <div class="song-controls">
                 <span class="runtime">${formatTime(song.start)}</span>
                 <span class="time">${formatTime(song.duration)}</span>
                 <span class="bpm">${song.bpm?song.bpm+' BPM':''}</span>
-                <span class="ann-runs">${ann.runs>0?'×'+ann.runs:''}</span>
                 <label class="priority-label drop-order-label">Drop <input type="number" class="drop-order" data-idx="${i}" min="0" value="${song.dropOrder}" style="width:3em"></label>
             </div>`;
         list.appendChild(li);
@@ -1307,14 +1516,14 @@ function renderSetlist(){
     document.querySelectorAll('.ann-edit-btn').forEach(btn=>{
         btn.addEventListener('click', e=>{
             e.stopPropagation();
-            openAnnotationModal(parseInt(btn.dataset.idx));
+            openAnnotationPopup(parseInt(btn.dataset.idx));
         });
     });
     document.querySelectorAll('#setlist li').forEach(li=>{
         let pressTimer=null;
         li.addEventListener('touchstart', e=>{
             if(e.target.closest('.ann-edit-btn,.drop-toggle,.drop-order')) return;
-            pressTimer=setTimeout(()=>{ pressTimer=null; openAnnotationModal(parseInt(li.dataset.index)); },500);
+            pressTimer=setTimeout(()=>{ pressTimer=null; openAnnotationPopup(parseInt(li.dataset.index)); },500);
         },{passive:true});
         li.addEventListener('touchend', ()=>{ if(pressTimer){clearTimeout(pressTimer);pressTimer=null;} });
         li.addEventListener('touchmove', ()=>{ if(pressTimer){clearTimeout(pressTimer);pressTimer=null;} });
@@ -1437,17 +1646,16 @@ function updateDisplay(){
     const notesEl=document.getElementById('songNotesDisplay');
     if(notesEl) notesEl.textContent=curSong && curSong.notes?curSong.notes:'';
 
-    const annFlagEl=document.getElementById('currentSongAnnotation');
-    const annNoteWrap=document.getElementById('currentSongNoteWrap');
-    const annNoteEl=document.getElementById('currentSongNote');
-    if(annFlagEl && curSong){
-        const ann=getAnnotation(curSong.title, curSong.artist);
-        annFlagEl.style.display=ann.needsPass?'block':'none';
-        if(annNoteEl) annNoteEl.textContent=ann.note||'';
-        if(annNoteWrap) annNoteWrap.style.display=ann.note?'block':'none';
-    } else {
-        if(annFlagEl) annFlagEl.style.display='none';
-        if(annNoteWrap) annNoteWrap.style.display='none';
+    const mainStarsEl = document.getElementById('mainAnnStars');
+    if(mainStarsEl && curSong){
+        const ann = getAnnotation(curSong.title, curSong.artist);
+        if(ann.rating > 0){
+            mainStarsEl.textContent = '★'.repeat(ann.rating) + '☆'.repeat(5 - ann.rating);
+            mainStarsEl.classList.add('rated');
+        } else {
+            mainStarsEl.textContent = '☆☆☆☆☆';
+            mainStarsEl.classList.remove('rated');
+        }
     }
 
     if(!isPractice){
@@ -1649,11 +1857,6 @@ function goNext(){
         let nextIndex = currentIndex + 1;
         while(nextIndex < songs.length && songs[nextIndex].dropped) nextIndex++;
         if(nextIndex < songs.length){
-            const leaving=songs[currentIndex];
-            const ann=getAnnotation(leaving.title, leaving.artist);
-            setAnnotation(leaving.title, leaving.artist, {runs:ann.runs+1});
-            const leavingLi=document.querySelector(`#setlist li[data-index="${currentIndex}"]`);
-            if(leavingLi){ const b=leavingLi.querySelector('.ann-runs'); if(b) b.textContent='×'+(ann.runs+1); }
             currentIndex = nextIndex;
             songStart = elapsed;
             startDiff[currentIndex] = elapsed - songs[currentIndex].start;
@@ -1722,6 +1925,7 @@ Rock and Roll All Nite,Kiss,2:57,138,Tuning: Eb (Live),0`;
 loadAnnotations();
 loadState();
 setMode(currentMode);
+hideSongsPanel();
 if(songs.length === 0){
     Papa.parse(DEFAULT_SETLIST_CSV, {
         header: true,
@@ -1729,6 +1933,29 @@ if(songs.length === 0){
         complete: res => { loadSongs(res.data); }
     });
 }
+
+// ── Annotation sheet event wiring ────────────────────
+document.getElementById('annSheetOverlay').addEventListener('click', closeAnnotationPopup);
+document.getElementById('annSheetClose').addEventListener('click', closeAnnotationPopup);
+document.getElementById('annSaveHistoryBtn').addEventListener('click', saveToHistory);
+document.getElementById('annEmailBtn').addEventListener('click', emailAllNotes);
+document.getElementById('annPracticeAgainBtn').addEventListener('click', function(){ this.classList.toggle('active'); });
+document.querySelectorAll('.ann-star').forEach(star => {
+    star.addEventListener('click', () => {
+        const val = parseInt(star.dataset.val);
+        const activeStars = Array.from(document.querySelectorAll('.ann-star.active'));
+        const currentRating = activeStars.length > 0 ? Math.max(...activeStars.map(s => parseInt(s.dataset.val))) : 0;
+        const newRating = currentRating === val ? 0 : val;
+        document.querySelectorAll('.ann-star').forEach(s => {
+            s.classList.toggle('active', parseInt(s.dataset.val) <= newRating);
+        });
+    });
+});
+document.querySelectorAll('.ann-chip').forEach(chip => {
+    chip.addEventListener('click', () => chip.classList.toggle('active'));
+});
+document.getElementById('mainAnnBtn').addEventListener('click', () => openAnnotationPopup(currentIndex));
+document.getElementById('muteBtn').addEventListener('click', toggleMute);
 // ── Tap Tempo ──────────────────────────────────────────────────────────────
 (function(){
     const TAP_TIMEOUT_MS = 3000;
