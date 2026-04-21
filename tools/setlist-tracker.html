@@ -1,0 +1,1262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>School of Rock Setlist Tracker</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js"></script>
+<script>
+function updateVh() {
+    document.documentElement.style.setProperty('--vh', window.innerHeight * 0.01 + 'px');
+}
+window.addEventListener('resize', updateVh);
+updateVh();
+</script>
+ <style>
+  html, body {
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      height: calc(var(--vh, 1vh) * 100);
+  }
+
+  body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #111;
+      height: calc(var(--vh, 1vh) * 100);
+      padding: 0;
+  }
+  .container {
+      width: 100%;
+      margin: 0;
+      background: rgba(0,0,0,0.6);
+      color: white;
+      box-shadow: none;
+      padding: 0;
+      position:relative;
+      min-height: calc(var(--vh, 1vh) * 100);
+  }
+  h1 {
+      text-align:center;
+      margin-bottom:15px;
+      font-weight:300;
+  }
+  #timerDisplay {
+      font-size:4em;
+      font-weight:bold;
+      text-align:center;
+      display:block;
+      margin:20px 0 10px;
+      color:#0cf;
+      text-shadow:0 0 5px #0cf;
+  }
+  #currentSongDisplay {
+      font-size:3em;
+      font-weight:bold;
+      text-align:center;
+      margin-bottom:0.3em;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width:100%;
+  }
+  #songNotesDisplay {
+      text-align:center;
+      font-size:1.1em;
+      margin-bottom:5px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width:100%;
+  }
+  #nextSongDisplay {
+      font-size:1.6em;
+      text-align:center;
+      margin-bottom:20px;
+      color:#7abaff;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width:100%;
+  }
+  #progressContainer {
+      height:20px;
+      background:#333;
+      border-radius:10px;
+      overflow:hidden;
+      margin:10px 0;
+  }
+  #progressBar {
+      height:100%;
+      width:0%;
+      background:#4caf50;
+      transition:width 0.2s ease;
+  }
+  #aheadBehind {
+      text-align:center;
+      font-size:2.2em;
+      font-weight:bold;
+      margin:8px 0;
+  }
+  #timeLine,#metadataLine{
+      text-align:center;
+      margin:4px 0;
+      font-size:1.2em;
+      color:#bbb;
+  }
+  #setlist { list-style:none; padding:0; }
+  #setlist li {
+      padding:16px 12px;
+      background:#2a2a2a;
+      color:#fff;
+      margin-bottom:8px;
+      border-radius:8px;
+      box-shadow:0 2px 4px rgba(0,0,0,0.05);
+      font-size:1.1em;
+      line-height:1.4;
+  }
+  #setlist li.playing {
+      background:#d1e7dd;
+      color:#000;
+      border-left:4px solid #0d6efd;
+  }
+  #setlist li.should {
+      background:#cfe2ff;
+      color:#000;
+  }
+  #setlist li.dropped {
+      background:#f8d7da;
+      color:#000;
+      text-decoration: line-through;
+      opacity:0.6;
+  }
+.song-info {
+      font-weight:bold;
+      margin-bottom:5px;
+  }
+.song-controls{ display:flex; flex-wrap:wrap; align-items:center; gap:10px; }
+.priority-label { font-size:0.9em; }
+.protect-label { font-size:0.9em; }
+.time { width:60px; text-align:right; }
+ .runtime { width:60px; text-align:right; }
+.bpm { width:70px; text-align:right; }
+  #navControls{
+      display:flex;
+      justify-content:center;
+      flex-wrap:wrap;
+      gap:15px;
+      margin-top:auto;
+      margin-bottom:15px;
+      position:relative;
+      z-index:200;
+  }
+  #navControls button{
+      font-size:1.5em;
+      padding:15px 25px;
+      background:#222;
+      color:white;
+      border:1px solid rgba(255,255,255,0.6);
+      border-radius:8px;
+      cursor:pointer;
+      white-space:nowrap;
+      flex:1 0 auto;
+      max-width:160px;
+  }
+  #navControls button.icon-btn{
+      font-size:2.4em;
+      width:84px;
+      height:84px;
+      padding:0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+  }
+  #dropBtn{ background:#552222; }
+  #togglePanelBtn{ width:70px; }
+  #navControls button:active{
+      background:#333;
+      transform:scale(0.97);
+  }
+  .highlight{
+      background:#ff9800 !important;
+  }
+  #metronomeControls{
+      text-align:center;
+      margin-top:auto;
+      margin-bottom:10px;
+  }
+  #metronomeBeats{
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      margin:10px auto;
+  }
+  .metronomeBeat{
+      width:86px;
+      height:86px;
+      border-radius:50%;
+      opacity:0.15;
+      transition:opacity 0.08s;
+  }
+  .metronomeBeat.active{
+      opacity:1;
+      box-shadow:0 0 8px currentColor;
+  }
+  .metronomeBeat.beat-1,
+  .metronomeBeat.beat-3{ background:#0d6efd; }
+  .metronomeBeat.beat-2,
+  .metronomeBeat.beat-4{ background:#2ecc71; }
+  .metronomeBeat.beat-1{ box-shadow:0 0 5px #0d6efd; }
+  @keyframes pulse{
+      0%,100%{ transform:scale(1); }
+      50%{ transform:scale(1.1); }
+  }
+  .metronomeBeat.beat-1.active,
+  .metronomeBeat.beat-3.active{
+      animation:pulse 0.4s ease-in-out;
+  }
+  #fileControls{
+      margin-top:20px;
+      text-align:center;
+  }
+  #fileControls .file-row{
+      display:flex;
+      flex-wrap:wrap;
+      justify-content:center;
+      align-items:center;
+      margin-top:10px;
+  }
+  #fileControls label{
+      margin:5px 10px;
+      font-size:1.1em;
+  }
+  #fileControls input[type="number"]{
+      width:4em;
+  }
+
+  body.panel-hidden #songsColumn{
+      display:none;
+  }
+  body.panel-hidden #navControls button{
+      font-size:1.8em;
+      padding:20px 30px;
+      max-width:160px;
+  }
+  body.panel-hidden #currentSongDisplay{
+      font-size:3em;
+  }
+  body.panel-hidden #nextSongDisplay{
+      font-size:1.5em;
+  }
+  body.panel-hidden #timerDisplay{
+      font-size:4em;
+  }
+  body.panel-hidden #metadataLine{ display:none; }
+
+  #contentWrapper{
+      display:flex;
+      flex-direction:column;
+      gap:20px;
+      min-height: calc(var(--vh, 1vh) * 100);
+  }
+  #songsColumn{
+      overflow-y:auto;
+      height: calc(var(--vh, 1vh) * 100);
+      flex:0 0 50%;
+      max-width:50vw;
+      min-width:300px;
+      position:relative;
+  }
+  #closePanelBtn{
+      position:absolute;
+      top:10px;
+      left:10px;
+      background:none;
+      border:none;
+      color:#fff;
+      font-size:2em;
+      z-index:301;
+  }
+  #infoColumn{
+      position:relative;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      flex:1;
+      min-height: calc(var(--vh, 1vh) * 100);
+  }
+  #centerInfo{
+      text-align:center;
+      flex:1;
+      padding:20px 0;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      align-items:center;
+  }
+  #fullscreenBtn{
+      position:fixed;
+      top:10px;
+      right:10px;
+      z-index:1000;
+      background:none;
+      border:none;
+      color:#bbb;
+      font-size:1.5em;
+      cursor:pointer;
+  }
+  .edge-nav{
+      position:absolute;
+      top:0;
+      bottom:0;
+      width:40%;
+      display:flex;
+      align-items:flex-end;
+      justify-content:center;
+      padding-bottom:20px;
+      font-size:3em;
+      color:rgba(255,255,255,0.7);
+      background:transparent;
+      border:none;
+      z-index:50;
+      transition:background 0.2s, box-shadow 0.2s;
+  }
+  .edge-nav:active{
+      background:rgba(255,255,255,0.15);
+      box-shadow:0 0 20px rgba(255,255,255,0.6) inset;
+  }
+  #edgePrev{
+      left:0;
+      justify-content:flex-start;
+      padding-left:10px;
+  }
+  #edgeNext{
+      right:0;
+      justify-content:flex-end;
+      padding-right:10px;
+  }
+  @media (min-width:800px){
+      #contentWrapper{ flex-direction:row; align-items:flex-start; }
+      #infoColumn{ flex:1; padding-right:20px; }
+      #songsColumn{ flex:0 0 50%; max-width:50vw; height: calc(var(--vh, 1vh) * 100); }
+      #closePanelBtn{ display:none; }
+  }
+  @media (max-width:799px){
+      #contentWrapper{ flex-direction:column; }
+      #songsColumn{
+          position:fixed;
+          inset:0;
+          width:100vw;
+          height: calc(var(--vh, 1vh) * 100);
+          max-width:none;
+          background:#111;
+          z-index:300;
+      }
+      #closePanelBtn{ display:block; }
+      body.panel-hidden #songsColumn{ display:none; }
+  }
+  @media (max-width:600px){
+      #navControls button{
+          font-size:1.2em;
+          padding:12px 20px;
+      }
+      #currentSongDisplay{ font-size:1.8em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+      #nextSongDisplay{ font-size:1.2em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  }
+
+  /* ── BPM Badge ─────────────────────────────────── */
+  #bpmBadge{
+      font-size:3em;
+      font-weight:900;
+      color:#ff9800;
+      text-align:center;
+      margin:0.05em 0 0.1em;
+      letter-spacing:0.04em;
+      line-height:1;
+      text-shadow:0 0 12px rgba(255,152,0,0.45);
+  }
+  body.panel-hidden #bpmBadge{ font-size:3em; }
+
+  /* ── Metronome toggle pill button ──────────────── */
+  #metronomeToggleBtn{
+      font-size:1.05em;
+      font-weight:700;
+      padding:0 22px;
+      border-radius:999px;
+      border:2px solid rgba(255,255,255,0.25);
+      background:#1c1c1c;
+      color:#777;
+      cursor:pointer;
+      min-height:54px;
+      min-width:130px;
+      transition:background 0.2s, color 0.2s, border-color 0.2s, box-shadow 0.2s;
+      letter-spacing:0.05em;
+  }
+  #metronomeToggleBtn.metro-on{
+      background:#0b250b;
+      color:#4caf50;
+      border-color:#4caf50;
+      box-shadow:0 0 10px rgba(76,175,80,0.35) inset;
+  }
+  #metronomeToggleBtn:active{ transform:scale(0.95); }
+
+  /* ── BPM row (−  [input]  +) ───────────────────── */
+  .metro-row{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:14px;
+      flex-wrap:wrap;
+      margin-bottom:8px;
+  }
+  .bpm-row{
+      display:flex;
+      align-items:center;
+      gap:6px;
+  }
+  .bpm-adj{
+      font-size:1.9em;
+      width:54px;
+      height:54px;
+      border-radius:50%;
+      border:1px solid rgba(255,255,255,0.25);
+      background:#1c1c1c;
+      color:white;
+      cursor:pointer;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      line-height:1;
+      padding:0;
+      transition:background 0.15s;
+  }
+  .bpm-adj:active{ background:#333; transform:scale(0.92); }
+  #bpmInput{
+      font-size:1.5em;
+      width:4.5em;
+      text-align:center;
+      background:#1a1a1a;
+      color:white;
+      border:1px solid rgba(255,255,255,0.25);
+      border-radius:8px;
+      padding:8px 4px;
+      min-height:54px;
+  }
+
+  /* ── Drop-toggle in setlist (bigger touch target) ─ */
+  .drop-toggle{ width:22px; height:22px; cursor:pointer; }
+  .drop-order{ height:38px; font-size:1em; }
+</style>
+</head>
+<body>
+<button id="fullscreenBtn" onclick="goFullscreen()">⛶</button>
+<div class="container">
+<div id="contentWrapper">
+<div id="infoColumn">
+  <span id="timerDisplay">00:00</span>
+  <div id="aheadBehind"></div>
+  <div id="timeLine"></div>
+  <div id="progressContainer"><div id="progressBar"></div></div>
+  <div id="centerInfo">
+    <div id="currentSongDisplay"></div>
+    <div id="bpmBadge"></div>
+    <div id="songNotesDisplay" style="text-align:center;margin-bottom:5px;"></div>
+    <div id="nextSongDisplay"></div>
+    <div id="timeRemaining" style="text-align:center;margin-bottom:10px;display:none;"></div>
+    <div id="metadataLine"></div>
+  </div>
+  <div id="metronomeControls">
+      <input type="checkbox" id="metronomeToggle" style="display:none">
+      <div class="metro-row">
+          <button id="metronomeToggleBtn" onclick="toggleMetronome()">♩ METRO OFF</button>
+          <div class="bpm-row">
+              <button class="bpm-adj" onclick="adjustBpm(-5)">−</button>
+              <input type="number" id="bpmInput" value="120" min="30">
+              <button class="bpm-adj" onclick="adjustBpm(5)">+</button>
+          </div>
+      </div>
+      <div id="metronomeBeats">
+          <div class="metronomeBeat beat-1"></div>
+          <div class="metronomeBeat beat-2"></div>
+          <div class="metronomeBeat beat-3"></div>
+          <div class="metronomeBeat beat-4"></div>
+      </div>
+  </div>
+  <div id="navControls">
+      <button id="startBtn" class="icon-btn">▶️</button>
+      <button id="stopBtn" class="icon-btn" disabled>⏹️</button>
+      <button id="dropBtn" class="icon-btn drop-btn" title="Drop Songs">❌🎵</button>
+      <button id="togglePanelBtn" class="icon-btn">☰</button>
+  </div>
+  <button id="edgePrev" class="edge-nav">⏮️</button>
+  <button id="edgeNext" class="edge-nav">⏭️</button>
+</div> <!-- infoColumn -->
+<div id="songsColumn">
+  <button id="closePanelBtn" class="icon-btn">✖️</button>
+  <ul id="setlist"></ul>
+<div id="fileControls">
+    <div class="file-row">
+        <input type="file" id="csvFile" accept=".csv">
+    </div>
+    <div class="file-row">
+        <label>Max Time (min): <input type="number" id="maxTime" value="60" min="1"></label>
+        <label>End By: <input type="time" id="endBy"></label>
+        <label>Transition (sec): <input type="number" id="transitionTime" value="60" min="0"></label>
+        <label><input type="checkbox" id="autoDrop"> Auto Drop</label>
+    </div>
+</div>
+</div>
+</div> <!-- contentWrapper -->
+</div>
+<script>
+function goFullscreen() {
+    const elem = document.documentElement;
+    if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+    } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen();
+    } else if (elem.msRequestFullscreen) {
+        elem.msRequestFullscreen();
+    }
+}
+document.addEventListener('fullscreenchange', () => {
+    const btn=document.getElementById('fullscreenBtn');
+    if(!btn) return;
+    if(document.fullscreenElement) btn.style.display='none';
+    else btn.style.display='block';
+});
+
+const toggleBtn = document.getElementById('togglePanelBtn');
+const closeBtn = document.getElementById('closePanelBtn');
+const edgePrev = document.getElementById('edgePrev');
+const edgeNext = document.getElementById('edgeNext');
+let panelVisible = true;
+
+function showSongsPanel(){
+    document.body.classList.remove('panel-hidden');
+    panelVisible = true;
+    if(toggleBtn) toggleBtn.textContent = '☰';
+}
+
+function hideSongsPanel(){
+    document.body.classList.add('panel-hidden');
+    panelVisible = false;
+    if(toggleBtn) toggleBtn.textContent = '☰';
+}
+
+function toggleSongsPanel(){
+    if(panelVisible) hideSongsPanel();
+    else showSongsPanel();
+}
+
+
+
+if(toggleBtn) toggleBtn.addEventListener('click', toggleSongsPanel);
+if(closeBtn) closeBtn.addEventListener('click', hideSongsPanel);
+let songs = [];
+let timer = null;
+let startTime = null;
+let currentIndex = 0;
+let speedFactor = 1;
+let songStart = 0; // actual start time (sec) of the current song
+const startDiff = []; // difference of actual start vs scheduled start per song
+let isPaused = false;
+let pauseStart = 0;
+let totalPause = 0; // accumulated pause time in ms
+const actualStart = [];
+const transitionDurations = [];
+let autoDrop = false;
+let currentBpm = 120;
+let metronomeTimer = null;
+let lastSongAppliedBpm = -1;
+let wakeLock = null;
+
+async function requestWakeLock(){
+    if('wakeLock' in navigator){
+        try{
+            wakeLock = await navigator.wakeLock.request('screen');
+            wakeLock.addEventListener('release',()=>{console.log('Wake lock released');});
+            console.log('Wake lock acquired');
+        }catch(e){
+            console.error('Wake lock error:', e);
+        }
+    }
+}
+
+async function releaseWakeLock(){
+    if(wakeLock){
+        try{
+            await wakeLock.release();
+        }catch(e){
+            console.error('Wake lock release error:', e);
+        }
+        wakeLock=null;
+    }
+}
+
+document.addEventListener('visibilitychange', () => {
+    if(document.visibilityState === 'visible'){
+        requestWakeLock();
+    }
+});
+
+function saveState(){
+    try{
+        const state={
+            songs,
+            currentIndex,
+            startTime,
+            songStart,
+            startDiff,
+            actualStart,
+            transitionDurations,
+            totalPause,
+            isPaused,
+            pauseStart,
+            autoDrop,
+            maxTime:document.getElementById('maxTime').value,
+            transitionTime:document.getElementById('transitionTime').value,
+            endBy:document.getElementById('endBy').value,
+            autoDropChecked:document.getElementById('autoDrop').checked,
+            metronome:document.getElementById('metronomeToggle').checked,
+            bpm:currentBpm,
+            lastSongAppliedBpm
+        };
+        localStorage.setItem('sorTrackerState', JSON.stringify(state));
+    }catch(e){}
+}
+
+function loadState(){
+    try{
+        const raw=localStorage.getItem('sorTrackerState');
+        if(!raw) return;
+        const state=JSON.parse(raw);
+        if(state.songs&&state.songs.length){
+            songs=state.songs;
+            currentIndex=state.currentIndex||0;
+            startTime=state.startTime||null;
+            songStart=state.songStart||0;
+            isPaused=state.isPaused||false;
+            pauseStart=state.pauseStart||0;
+            totalPause=state.totalPause||0;
+            autoDrop=state.autoDrop||false;
+            state.startDiff&&state.startDiff.forEach((v,i)=>startDiff[i]=v);
+            state.actualStart&&state.actualStart.forEach((v,i)=>actualStart[i]=v);
+            state.transitionDurations&&state.transitionDurations.forEach((v,i)=>transitionDurations[i]=v);
+            if(state.maxTime) document.getElementById('maxTime').value=state.maxTime;
+            if(state.transitionTime) document.getElementById('transitionTime').value=state.transitionTime;
+            if(state.endBy) document.getElementById('endBy').value=state.endBy;
+            document.getElementById('autoDrop').checked=state.autoDropChecked||false;
+            document.getElementById('metronomeToggle').checked=state.metronome||false;
+            if(state.bpm) currentBpm=state.bpm;
+            lastSongAppliedBpm=state.lastSongAppliedBpm??-1;
+            renderSetlist();
+            if(startTime && !isPaused){
+                timer=setInterval(updateDisplay,1000/speedFactor);
+                requestWakeLock();
+            }
+            updateButtonStates();
+            if(document.getElementById('metronomeToggle').checked) startMetronome();
+            updateMetronomeBtn();
+            updateBpmBadge();
+            updateDisplay();
+        }
+    }catch(e){}
+}
+
+window.addEventListener('beforeunload', () => {
+    releaseWakeLock();
+    saveState();
+});
+
+// Check query string for a debugging speed multiplier, e.g. ?debugspeed=5
+// This is intentionally hidden so regular users don't accidentally change it.
+const params = new URLSearchParams(window.location.search);
+const dbg = parseFloat(params.get('debugspeed'));
+if(dbg && dbg > 0) speedFactor = dbg;
+
+function parseDuration(str){
+    if(!str) return 0;
+    str = String(str).trim();
+    if(str.includes(':')){
+        const parts = str.split(':').map(Number);
+        if(parts.length===2){
+            return parts[0]*60 + parts[1];
+        } else if(parts.length===3){
+            return parts[0]*3600 + parts[1]*60 + parts[2];
+        }
+    }
+    if(/^[0-9.]+$/.test(str)) return parseFloat(str)*60;
+    return 0;
+}
+
+function formatTime(sec){
+    sec = Math.max(0, Math.floor(sec));
+    const m = Math.floor(sec/60);
+    const s = sec%60;
+    return `${m}:${s.toString().padStart(2,'0')}`;
+}
+
+function getElapsedMs(){
+    if(!startTime) return 0;
+    let paused = totalPause;
+    if(isPaused) paused += Date.now()-pauseStart;
+    return Date.now() - startTime - paused;
+}
+  
+
+function formatClock(date){
+    return date.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+}
+
+function startMetronome(){
+    if(metronomeTimer) clearInterval(metronomeTimer);
+    const beats=document.querySelectorAll('.metronomeBeat');
+    if(!beats.length) return;
+    let index=0;
+    const interval=60000/Math.max(1,currentBpm);
+    beats.forEach(b=>b.classList.remove('active'));
+    metronomeTimer=setInterval(()=>{
+        beats.forEach(b=>b.classList.remove('active'));
+        beats[index].classList.add('active');
+        index=(index+1)%beats.length;
+    },interval);
+}
+
+function stopMetronome(){
+    if(metronomeTimer) clearInterval(metronomeTimer);
+    metronomeTimer=null;
+    document.querySelectorAll('.metronomeBeat').forEach(b=>b.classList.remove('active'));
+}
+
+function setMetronomeBpm(bpm){
+    if(!bpm || isNaN(bpm)) return;
+    currentBpm=parseInt(bpm);
+    const inp=document.getElementById('bpmInput');
+    if(inp) inp.value=currentBpm;
+    const toggle=document.getElementById('metronomeToggle');
+    if(toggle && toggle.checked) startMetronome();
+    updateBpmBadge();
+}
+
+function updateBpmBadge(){
+    const badge=document.getElementById('bpmBadge');
+    if(badge) badge.textContent=currentBpm?'♩ '+currentBpm:'';
+}
+
+function toggleMetronome(){
+    const toggle=document.getElementById('metronomeToggle');
+    if(!toggle) return;
+    toggle.checked=!toggle.checked;
+    if(toggle.checked) startMetronome();
+    else stopMetronome();
+    updateMetronomeBtn();
+    saveState();
+}
+
+function updateMetronomeBtn(){
+    const toggle=document.getElementById('metronomeToggle');
+    const btn=document.getElementById('metronomeToggleBtn');
+    if(!btn) return;
+    if(toggle && toggle.checked){
+        btn.textContent='♩ METRO ON';
+        btn.classList.add('metro-on');
+    } else {
+        btn.textContent='♩ METRO OFF';
+        btn.classList.remove('metro-on');
+    }
+}
+
+function adjustBpm(delta){
+    const newBpm=Math.max(30, currentBpm+delta);
+    setMetronomeBpm(newBpm);
+    saveState();
+}
+
+function applySongBpm(){
+    const song=songs[currentIndex];
+    if(song && song.bpm && currentIndex!==lastSongAppliedBpm){
+        setMetronomeBpm(song.bpm);
+        lastSongAppliedBpm=currentIndex;
+    }
+}
+
+document.getElementById('csvFile').addEventListener('change', e=>{
+    const file = e.target.files[0];
+    if(!file) return;
+    Papa.parse(file, {
+        header:true,
+        skipEmptyLines:true,
+        complete: res => { loadSongs(res.data); }
+    });
+});
+
+function loadSongs(data){
+    songs = [];
+    if(timer){
+        clearInterval(timer);
+        timer=null;
+    }
+    startTime=null;
+    isPaused=false;
+    totalPause=0;
+    currentIndex=0;
+    data.forEach(row=>{
+        const normalized = {};
+        Object.keys(row).forEach(k=>{
+            normalized[k.trim().toLowerCase()] = row[k];
+        });
+        const title = normalized['song'] || normalized['title'];
+        const artist = normalized['artist'];
+        const durField = normalized['duration'] || normalized['time'];
+        const bpmField = normalized['bpm'] || normalized['tempo'];
+        const notesField = normalized['notes'] || normalized['note'];
+        const dropField = normalized['drop order'] || normalized['drop'];
+        const dropVal = parseInt(dropField);
+        if(!title && !artist) return; // ignore note rows
+        songs.push({
+            title: title || '',
+            artist: artist || '',
+            duration: parseDuration(durField),
+            bpm: bpmField ? parseInt(bpmField) : null,
+            notes: notesField || '',
+            dropOrder: isNaN(dropVal) ? 0 : dropVal,
+            start:0,
+            protect:false,
+            dropped:false,
+            manualDrop:false
+        });
+    });
+    lastSongAppliedBpm=-1;
+    if(songs.length && songs[0].bpm){
+        setMetronomeBpm(songs[0].bpm);
+        lastSongAppliedBpm=0;
+    }
+    renderSetlist();
+    updateDisplay();
+    saveState();
+}
+
+function renderSetlist(){
+    const list=document.getElementById('setlist');
+    list.innerHTML='';
+    let cumulative=0;
+    const transition=parseInt(document.getElementById('transitionTime').value)||0;
+    songs.forEach((song,i)=>{
+        song.start=cumulative;
+        cumulative+=song.duration+transition;
+        const li=document.createElement('li');
+        li.dataset.index=i;
+        li.innerHTML=`<div class="song-info"><label class="protect-label"><input type="checkbox" class="drop-toggle" data-idx="${i}" ${song.dropped?'':'checked'}></label> ${i+1}. ${song.title} - ${song.artist}</div>
+            <div class="song-controls">
+                <span class="runtime">${formatTime(song.start)}</span>
+                <span class="time">${formatTime(song.duration)}</span>
+                <span class="bpm">${song.bpm?song.bpm+' BPM':''}</span>
+                <label class="priority-label">Drop <input type="number" class="drop-order" data-idx="${i}" min="0" value="${song.dropOrder}" style="width:3em"></label>
+            </div>`;
+        list.appendChild(li);
+    });
+    document.querySelectorAll('.drop-toggle').forEach(cb=>{
+        cb.addEventListener('change',e=>{
+            const idx=parseInt(e.target.dataset.idx);
+            const checked=e.target.checked;
+            songs[idx].dropped=!checked;
+            songs[idx].manualDrop=!checked;
+            if(autoDrop){
+                const elapsed=startTime?Math.floor(getElapsedMs()/1000*speedFactor):0;
+                computeDroppedSongs(elapsed);
+            }
+            updateDisplay();
+            saveState();
+        });
+    });
+    document.querySelectorAll('.drop-order').forEach(inp=>{
+        inp.addEventListener('change',e=>{
+            const idx=parseInt(e.target.dataset.idx);
+            const val=parseInt(e.target.value);
+            if(!isNaN(val) && val>=0) songs[idx].dropOrder=val;
+            saveState();
+        });
+    });
+    document.getElementById('timeRemaining').textContent='';
+    updateDisplay();
+}
+
+function computeDroppedSongs(elapsed){
+    const maxSec=parseInt(document.getElementById('maxTime').value)*60;
+    const remaining=maxSec-elapsed;
+    const transition=parseInt(document.getElementById('transitionTime').value)||0;
+
+    songs.forEach(s=>{ if(!s.manualDrop) s.dropped=false; });
+
+    const pending=[];
+    for(let i=currentIndex;i<songs.length;i++){
+        if(!songs[i].manualDrop) pending.push(i);
+    }
+    const droppable=pending.filter(i=>!songs[i].protect);
+
+    const totalDur=idxs=>{
+        let t=0;
+        for(let j=0;j<idxs.length;j++){
+            t+=songs[idxs[j]].duration;
+            if(j<idxs.length-1) t+=transition;
+        }
+        return t;
+    };
+
+    let keep=[...pending];
+    if(totalDur(keep)<=remaining) return;
+
+    const closerIdx=songs.length-1;
+    // Sort drop candidates so we always drop from the bottom first.
+    const order=droppable.sort((a,b)=>{
+        if(a===closerIdx && b!==closerIdx) return 1;
+        if(b===closerIdx && a!==closerIdx) return -1;
+        const da=songs[a].dropOrder??0;
+        const db=songs[b].dropOrder??0;
+        const pa=da===0?Infinity:da;
+        const pb=db===0?Infinity:db;
+        if(pa!==pb) return pa-pb;
+        return b-a;
+    });
+
+    for(const idx of order){
+        if(totalDur(keep)<=remaining) break;
+        keep=keep.filter(k=>k!==idx);
+        songs[idx].dropped=true;
+        songs[idx].manualDrop=false;
+    }
+}
+
+function updateDropBtn(elapsed){
+    const btn=document.getElementById('dropBtn');
+    if(!btn) return;
+    if(autoDrop) btn.classList.remove('highlight');
+    else btn.classList.add('highlight');
+
+    const maxSec=parseInt(document.getElementById('maxTime').value)*60;
+    const remaining=remainingDuration(true, elapsed); // use current dropped state
+    const show=!autoDrop && (elapsed + remaining > maxSec);
+    btn.style.display=show?'':'none';
+}
+
+function remainingDuration(withDrops, elapsed){
+    const transition = parseInt(document.getElementById('transitionTime').value) || 0;
+    const remainIdx = [];
+    for(let i=currentIndex; i<songs.length; i++){
+        if(withDrops && songs[i].dropped) continue;
+        remainIdx.push(i);
+    }
+    let total = 0;
+    remainIdx.forEach((idx,j)=>{
+        total += songs[idx].duration;
+        if(j < remainIdx.length-1) total += transition;
+    });
+    const curSongDur = songs[currentIndex] ? songs[currentIndex].duration : 0;
+    const progress = Math.min(curSongDur, Math.max(0, elapsed - songStart));
+    return Math.max(0, total - progress);
+}
+
+function updateDisplay(){
+    const elapsed=startTime ? Math.floor(getElapsedMs()/1000*speedFactor) : 0;
+    const realElapsed=startTime ? Math.floor(getElapsedMs()/1000) : 0;
+    if(autoDrop) computeDroppedSongs(elapsed);
+    updateDropBtn(elapsed);
+    document.getElementById('timerDisplay').textContent=formatTime(elapsed);
+    const maxSec=parseInt(document.getElementById('maxTime').value)*60;
+    const setRemain=remainingDuration(true, elapsed);
+    const gigRemain=Math.max(0, maxSec-elapsed);
+    const remEl=document.getElementById('timeRemaining');
+    if(remEl){
+        remEl.textContent=`${formatTime(setRemain)} of ${formatTime(gigRemain)}`;
+        remEl.style.color=setRemain>gigRemain?'red':'#0cf';
+    }
+    const progress=document.getElementById('progressBar');
+    if(progress){
+        progress.style.width=Math.min(100,elapsed/maxSec*100)+"%";
+    }
+    const curSong=songs[currentIndex];
+    applySongBpm();
+    const songEl=document.getElementById('currentSongDisplay');
+    if(songEl){
+        songEl.textContent=curSong?`${curSong.title} - ${curSong.artist}`:'';
+    }
+    const notesEl=document.getElementById('songNotesDisplay');
+    if(notesEl){
+        notesEl.textContent=curSong && curSong.notes?curSong.notes:'';
+    }
+    const nextEl=document.getElementById('nextSongDisplay');
+    if(nextEl){
+        let idx=currentIndex+1;
+        while(idx<songs.length && songs[idx].dropped) idx++;
+        const nextSong=idx<songs.length?songs[idx]:null;
+        nextEl.textContent=nextSong?`Next Up: ${nextSong.title} - ${nextSong.artist}`:'';
+    }
+    const diffEl=document.getElementById('aheadBehind');
+    if(diffEl){
+        diffEl.style.color='';
+        if(curSong){
+            const setRemain = remainingDuration(true, elapsed);
+            const maxSec = parseInt(document.getElementById('maxTime').value) * 60;
+            const gigRemain = Math.max(0, maxSec - elapsed);
+            let diff = gigRemain - setRemain;
+            let text = 'On time';
+            if(Math.abs(diff) >= 1){
+                if(diff < 0){
+                    text = `Behind ${formatTime(-diff)}`;
+                    diffEl.style.color = 'red';
+                }else{
+                    text = `Ahead ${formatTime(diff)}`;
+                    diffEl.style.color = 'limegreen';
+                }
+            }
+            diffEl.textContent = text;
+        }else{
+            diffEl.textContent='';
+        }
+    }
+    const timeLine=document.getElementById('timeLine');
+    if(timeLine){
+        const rd=remainingDuration(true, elapsed);
+        const endTime=new Date(Date.now()+rd*1000);
+        timeLine.textContent=`Time: ${formatClock(new Date())} -> ${formatClock(endTime)} (Estimated Finish)`;
+    }
+    const meta=document.getElementById('metadataLine');
+    if(meta){
+        const count=songs.filter(s=>s.dropped).length;
+        const avg=transitionDurations.length?transitionDurations.reduce((a,b)=>a+b,0)/transitionDurations.length:0;
+        meta.textContent=`Dropped: ${count} | Avg trans: ${formatTime(avg)}`;
+    }
+    let shouldIndex=null;
+    for(let i=0;i<songs.length;i++){
+        if(elapsed < songs[i].start + songs[i].duration){
+            shouldIndex=i;break;
+        }
+    }
+    document.querySelectorAll('#setlist li').forEach(li=>li.classList.remove('playing','should','dropped'));
+    const playLi=document.querySelector(`#setlist li[data-index="${currentIndex}"]`);
+    if(playLi) playLi.classList.add('playing');
+    if(shouldIndex!==null){
+        const shouldLi=document.querySelector(`#setlist li[data-index="${shouldIndex}"]`);
+        if(shouldLi) shouldLi.classList.add('should');
+    }
+    songs.forEach((song,i)=>{
+        const li=document.querySelector(`#setlist li[data-index="${i}"]`);
+        if(li){
+            if(song.dropped) li.classList.add('dropped');
+            else li.classList.remove('dropped');
+            const cb=li.querySelector('.drop-toggle');
+            if(cb) cb.checked=!song.dropped;
+        }
+    });
+}
+
+function startTimer(){
+    if(timer) return;
+    startTime=Date.now();
+    isPaused=false;
+    totalPause=0;
+    requestWakeLock();
+    hideSongsPanel();
+
+    const endInput=document.getElementById('endBy');
+    if(endInput && endInput.value){
+        const parts=endInput.value.split(':').map(Number);
+        if(parts.length===2){
+            const target=new Date(startTime);
+            target.setHours(parts[0], parts[1], 0, 0);
+            if(target.getTime()<startTime) target.setDate(target.getDate()+1);
+            const minutes=Math.round((target.getTime()-startTime)/60000);
+            const max=document.getElementById('maxTime');
+            if(max) max.value=minutes;
+        }
+    }
+
+    songStart=0;
+    startDiff[0]=0;
+    actualStart[0]=0;
+    timer=setInterval(updateDisplay,1000/speedFactor);
+    const toggle=document.getElementById('metronomeToggle');
+    if(toggle && toggle.checked) startMetronome();
+    updateButtonStates();
+    updateDisplay();
+    saveState();
+}
+
+function updateButtonStates(){
+    const start=document.getElementById('startBtn');
+    const stop=document.getElementById('stopBtn');
+    if(!start || !stop) return;
+    if(!startTime){
+        start.textContent='▶️';
+        stop.disabled=true;
+    }else if(isPaused){
+        start.textContent='▶️';
+        stop.disabled=false;
+    }else{
+        start.textContent='⏸️';
+        stop.disabled=false;
+    }
+}
+
+function togglePause(){
+    if(!startTime) return;
+    if(isPaused){
+        totalPause+=Date.now()-pauseStart;
+        isPaused=false;
+        timer=setInterval(updateDisplay,1000/speedFactor);
+    }else{
+        if(timer){
+            clearInterval(timer);
+            timer=null;
+        }
+        isPaused=true;
+        pauseStart=Date.now();
+    }
+    updateButtonStates();
+    updateDisplay();
+    saveState();
+}
+
+function stopTimer(){
+    if(!startTime) return;
+    if(timer){
+        clearInterval(timer);
+        timer=null;
+    }
+    releaseWakeLock();
+    if(isPaused){
+        totalPause+=Date.now()-pauseStart;
+        isPaused=false;
+    }
+    stopMetronome();
+    const elapsedSec=Math.floor(getElapsedMs()/1000*speedFactor);
+    const pauseSec=Math.floor(totalPause/1000*speedFactor);
+    let playedDur=0;
+    for(let i=0;i<=currentIndex && i<songs.length;i++) playedDur+=songs[i].duration;
+    const transitionSec=Math.max(0,elapsedSec-playedDur);
+    alert(`Songs played: ${currentIndex+1}\nEstimated transition time: ${formatTime(transitionSec)}\nTime paused: ${formatTime(pauseSec)}`);
+    currentIndex = 0;
+    songStart = 0;
+    startDiff.length = 0;
+    actualStart.length = 0;
+    startTime = null;
+    totalPause = 0;
+    updateButtonStates();
+    updateDisplay();
+    saveState();
+    showSongsPanel();
+}
+
+document.getElementById('startBtn').addEventListener('click', () => {
+    if(!startTime) startTimer();
+    else togglePause();
+});
+document.getElementById('stopBtn').addEventListener('click', () => {
+    if(confirm('Are you sure you want to stop?')) stopTimer();
+});
+function goPrev(){
+    currentIndex = Math.max(0, currentIndex - 1);
+    const elapsed = startTime ? Math.floor(getElapsedMs() / 1000) : 0;
+    songStart = elapsed;
+    startDiff[currentIndex] = elapsed - songs[currentIndex].start;
+    actualStart[currentIndex] = elapsed;
+    updateDisplay();
+    saveState();
+}
+
+function goNext(){
+    const elapsed = startTime ? Math.floor(getElapsedMs() / 1000) : 0;
+    if (currentIndex < songs.length - 1) {
+        if (actualStart[currentIndex] !== undefined) {
+            const trans = elapsed - actualStart[currentIndex] - songs[currentIndex].duration;
+            if (trans >= 0) transitionDurations[currentIndex] = trans;
+        }
+        let nextIndex = currentIndex + 1;
+        while(nextIndex < songs.length && songs[nextIndex].dropped) nextIndex++;
+        if(nextIndex < songs.length){
+            currentIndex = nextIndex;
+            songStart = elapsed;
+            startDiff[currentIndex] = elapsed - songs[currentIndex].start;
+            actualStart[currentIndex] = elapsed;
+        }
+    }
+    updateDisplay();
+    saveState();
+}
+
+if(edgePrev) edgePrev.addEventListener('click', goPrev);
+if(edgeNext) edgeNext.addEventListener('click', goNext);
+document.getElementById('transitionTime').addEventListener('change', () => {
+    renderSetlist();
+    saveState();
+});
+document.getElementById('maxTime').addEventListener('change', () => {
+    const elapsed = startTime ? Math.floor(getElapsedMs()/1000*speedFactor) : 0;
+    if(autoDrop) computeDroppedSongs(elapsed);
+    updateDisplay();
+    saveState();
+});
+document.getElementById('dropBtn').addEventListener('click', ()=>{
+    const elapsed=startTime ? Math.floor(getElapsedMs()/1000*speedFactor) : 0;
+    computeDroppedSongs(elapsed);
+    updateDisplay();
+    saveState();
+});
+document.getElementById('autoDrop').addEventListener('change', e=>{
+    autoDrop=e.target.checked;
+    const elapsed=startTime ? Math.floor(getElapsedMs()/1000*speedFactor) : 0;
+    if(autoDrop) computeDroppedSongs(elapsed);
+    updateDropBtn(elapsed);
+    updateDisplay();
+    saveState();
+});
+document.getElementById('metronomeToggle').addEventListener('change', e=>{
+    if(e.target.checked) startMetronome();
+    else stopMetronome();
+    updateMetronomeBtn();
+    saveState();
+});
+document.getElementById('bpmInput').addEventListener('change', e=>{
+    const val=parseInt(e.target.value);
+    if(!isNaN(val) && val>0){
+        setMetronomeBpm(val);
+    }
+    saveState();
+});
+const DEFAULT_SETLIST_CSV = `Song,Artist,Duration,BPM,Notes,Drop Order
+Jump,Van Halen,2:55,129,Tuning: E,0
+All The Small Things,Blink-182,2:47,149,Tuning: E,0
+Mr. Brightside,The Killers,3:43,148,Tuning: E,0
+The Middle,Jimmy Eat World,2:45,162,Tuning: E,0
+Just What I Needed,The Cars,3:45,127,Tuning: E,0
+Should I Stay or Should I Go,The Clash,3:09,113,Tuning: E,0
+I Want You to Want Me,Cheap Trick,2:38,172,Tuning: E (Live),0
+I Miss You,Blink-182,3:47,110,Tuning: E,0
+Pet Sematary,Ramones,3:29,148,Tuning: E,0
+Inside Out,Eve 6,3:39,175,Tuning: E,0
+Takin' Care of Business,Bachman-Turner Overdrive,4:49,130,Tuning: E,0
+Stone in Love,Journey,4:26,118,Tuning: E,0
+Round and Round,Ratt,4:26,127,Tuning: Eb,0
+Rock and Roll All Nite,Kiss,2:57,138,Tuning: Eb (Live),0`;
+
+loadState();
+if(songs.length === 0){
+    Papa.parse(DEFAULT_SETLIST_CSV, {
+        header: true,
+        skipEmptyLines: true,
+        complete: res => { loadSongs(res.data); }
+    });
+}
+updateDropBtn(0);
+updateMetronomeBtn();
+updateBpmBadge();
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js');
+    });
+}
+</script>
+</body>
+</html>
