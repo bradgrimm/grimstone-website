@@ -413,7 +413,7 @@ updateVh();
   .metro-row--top{ gap:18px; margin-bottom:4px; }
   .metro-row--controls{ gap:12px; margin-bottom:4px; }
 
-  /* ── Large in-controls BPM readout ─────────────── */
+  /* ── BPM readout (clickable to open popup) ─────── */
   #bpmReadout{
       font-size:3.2em;
       font-weight:900;
@@ -423,10 +423,40 @@ updateVh();
       text-shadow:0 0 14px rgba(255,152,0,0.5);
       min-width:3ch;
       text-align:center;
-      pointer-events:none;
+      cursor:pointer;
       user-select:none;
+      -webkit-user-select:none;
+      touch-action:manipulation;
   }
+  #bpmReadout:active{ opacity:0.75; }
   body.panel-hidden #bpmReadout{ font-size:3.6em; }
+
+  /* ── BPM popup ──────────────────────────────────── */
+  #metroPopup{
+      display:none;
+      position:fixed;
+      bottom:120px;
+      left:50%;
+      transform:translateX(-50%);
+      background:#1e1e1e;
+      border:1px solid rgba(255,255,255,0.2);
+      border-radius:16px;
+      padding:18px 24px;
+      z-index:500;
+      flex-direction:column;
+      align-items:center;
+      gap:14px;
+      box-shadow:0 8px 32px rgba(0,0,0,0.6);
+      min-width:260px;
+  }
+  #metroPopup.open{ display:flex; }
+  #metroPopupOverlay{
+      display:none;
+      position:fixed;
+      inset:0;
+      z-index:499;
+  }
+  #metroPopupOverlay.open{ display:block; }
 
   /* ── Fine-adjust buttons (±1) ───────────────────── */
   .bpm-adj{
@@ -456,7 +486,7 @@ updateVh();
       font-size:1.6em;
       font-weight:900;
       letter-spacing:0.08em;
-      min-width:130px;
+      min-width:160px;
       min-height:76px;
       border-radius:16px;
       border:2px solid rgba(255,255,255,0.3);
@@ -478,7 +508,6 @@ updateVh();
       transform:scale(0.96);
   }
   #tapTempoBtn.tap-active{ border-color:#7abaff; color:#7abaff; }
-  body.panel-hidden #tapTempoBtn{ min-height:88px; min-width:150px; }
 
   /* ── Hidden BPM input (kept for state save/load) ── */
   #bpmInput{ display:none; }
@@ -521,6 +550,12 @@ updateVh();
       white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
   }
   .ann-runs{ font-size:0.85em; color:#7abaff; min-width:28px; text-align:right; font-weight:bold; }
+  .ann-edit-btn{
+      background:none; border:none; color:#666; font-size:1em; cursor:pointer;
+      padding:2px 6px; border-radius:4px; vertical-align:middle; line-height:1;
+  }
+  .ann-edit-btn:hover{ color:#ccc; }
+  #setlist li.ann-needs-pass .ann-edit-btn{ color:#ff9800; }
 
   #currentSongAnnotation{ margin:6px 0 4px; }
   #currentSongPassFlag{
@@ -591,15 +626,7 @@ updateVh();
       <input type="checkbox" id="metronomeToggle" style="display:none">
       <div class="metro-row metro-row--top">
           <button id="metronomeToggleBtn" onclick="toggleMetronome()">♩ METRO OFF</button>
-          <div id="bpmReadout" aria-label="Current BPM">120</div>
-      </div>
-      <div class="metro-row metro-row--controls">
-          <button class="bpm-adj" onclick="adjustBpm(-1)" aria-label="BPM minus 1">−1</button>
-          <button id="tapTempoBtn"
-                  aria-label="Tap tempo"
-                  ontouchstart="handleTapTempo(event)"
-                  onclick="handleTapTempo(event)">TAP</button>
-          <button class="bpm-adj" onclick="adjustBpm(1)" aria-label="BPM plus 1">+1</button>
+          <div id="bpmReadout" aria-label="Tap to adjust BPM" onclick="toggleMetroPopup()" title="Click to adjust BPM">120</div>
       </div>
       <input type="number" id="bpmInput" value="120" min="30" style="display:none">
       <div id="metronomeBeats">
@@ -607,6 +634,18 @@ updateVh();
           <div class="metronomeBeat beat-2"></div>
           <div class="metronomeBeat beat-3"></div>
           <div class="metronomeBeat beat-4"></div>
+      </div>
+  </div>
+
+  <div id="metroPopupOverlay" onclick="closeMetroPopup()"></div>
+  <div id="metroPopup" role="dialog" aria-label="BPM controls">
+      <div class="metro-row">
+          <button class="bpm-adj" onclick="adjustBpm(-1)">−1</button>
+          <button id="tapTempoBtn"
+                  aria-label="Tap tempo"
+                  ontouchstart="handleTapTempo(event)"
+                  onclick="handleTapTempo(event)">TAP</button>
+          <button class="bpm-adj" onclick="adjustBpm(1)">+1</button>
       </div>
   </div>
   <div id="navControls">
@@ -1145,6 +1184,7 @@ function renderSetlist(){
         li.innerHTML=`<div class="song-info">
                 <label class="protect-label"><input type="checkbox" class="drop-toggle" data-idx="${i}" ${song.dropped?'':'checked'}></label>
                 ${ann.needsPass?'<span class="ann-pass-icon">⚠</span>':''}${i+1}. ${song.title} - ${song.artist}
+                <button class="ann-edit-btn" data-idx="${i}" title="Edit notes">✎</button>
                 ${ann.note?`<span class="ann-note-inline">${ann.note}</span>`:''}
             </div>
             <div class="song-controls">
@@ -1178,9 +1218,16 @@ function renderSetlist(){
             saveState();
         });
     });
+    document.querySelectorAll('.ann-edit-btn').forEach(btn=>{
+        btn.addEventListener('click', e=>{
+            e.stopPropagation();
+            openAnnotationModal(parseInt(btn.dataset.idx));
+        });
+    });
     document.querySelectorAll('#setlist li').forEach(li=>{
         let pressTimer=null;
         li.addEventListener('touchstart', e=>{
+            if(e.target.closest('.ann-edit-btn,.drop-toggle,.drop-order')) return;
             pressTimer=setTimeout(()=>{ pressTimer=null; openAnnotationModal(parseInt(li.dataset.index)); },500);
         },{passive:true});
         li.addEventListener('touchend', ()=>{ if(pressTimer){clearTimeout(pressTimer);pressTimer=null;} });
@@ -1628,6 +1675,17 @@ if(songs.length === 0){
         }
     };
 })();
+
+function toggleMetroPopup(){
+    const popup = document.getElementById('metroPopup');
+    const overlay = document.getElementById('metroPopupOverlay');
+    const isOpen = popup.classList.contains('open');
+    if(isOpen){ closeMetroPopup(); } else { popup.classList.add('open'); overlay.classList.add('open'); }
+}
+function closeMetroPopup(){
+    document.getElementById('metroPopup').classList.remove('open');
+    document.getElementById('metroPopupOverlay').classList.remove('open');
+}
 
 // Keep #bpmReadout in sync via all paths that call updateBpmBadge
 (function(){
