@@ -189,15 +189,19 @@ updateVh();
   #metronomeBeats{
       display:flex;
       justify-content:center;
-      gap:10px;
-      margin:10px auto;
+      gap:14px;
+      margin:16px auto 8px;
   }
   .metronomeBeat{
-      width:86px;
-      height:86px;
+      width:100px;
+      height:100px;
       border-radius:50%;
       opacity:0.15;
       transition:opacity 0.08s;
+  }
+  @media(max-width:600px){
+      .metronomeBeat{ width:72px; height:72px; }
+      #metronomeBeats{ gap:10px; }
   }
   .metronomeBeat.active{
       opacity:1;
@@ -308,8 +312,8 @@ updateVh();
   }
   .edge-nav{
       position:absolute;
-      top:0;
-      bottom:0;
+      top:110px;
+      bottom:170px;
       width:40%;
       display:flex;
       align-items:flex-end;
@@ -537,8 +541,27 @@ updateVh();
   body.practice-mode #timeRemaining{ display:none !important; }
   body.practice-mode #timeLine{ display:none !important; }
   body.practice-mode #dropBtn{ display:none !important; }
+  body.practice-mode #stopBtn{ display:none !important; }
+  body.practice-mode #nextSongDisplay{ display:none !important; }
+  body.practice-mode #songNotesDisplay{ display:none !important; }
   body.practice-mode .perf-only{ display:none !important; }
   body.practice-mode .drop-order-label{ display:none !important; }
+
+  /* ── Count-in display ─────────────────────────────── */
+  #countInDisplay{
+      display:none;
+      font-size:8em;
+      font-weight:900;
+      color:#fff;
+      text-align:center;
+      line-height:1;
+      text-shadow:0 0 30px rgba(255,255,255,0.4);
+      animation:countPulse 0.15s ease-out;
+  }
+  @keyframes countPulse{ from{transform:scale(1.3)} to{transform:scale(1)} }
+
+  /* Hide redundant BPM badge — readout in controls serves this purpose */
+  #bpmBadge{ display:none !important; }
 
   /* ── Annotations ─────────────────────────────────── */
   #setlist li.ann-needs-pass{ border-left:4px solid #ff9800; }
@@ -613,8 +636,14 @@ updateVh();
   <div id="timeLine"></div>
   <div id="progressContainer"><div id="progressBar"></div></div>
   <div id="centerInfo">
+    <div id="countInDisplay"></div>
     <div id="currentSongDisplay"></div>
-    <div id="bpmBadge"></div>
+    <div id="metronomeBeats">
+        <div class="metronomeBeat beat-1"></div>
+        <div class="metronomeBeat beat-2"></div>
+        <div class="metronomeBeat beat-3"></div>
+        <div class="metronomeBeat beat-4"></div>
+    </div>
     <div id="songNotesDisplay" style="text-align:center;margin-bottom:5px;"></div>
     <div id="currentSongAnnotation" style="display:none;"><span id="currentSongPassFlag">⚠ NEEDS ANOTHER PASS</span></div>
     <div id="currentSongNoteWrap" style="display:none;"><span id="currentSongNote"></span></div>
@@ -624,21 +653,13 @@ updateVh();
   </div>
   <div id="metronomeControls">
       <input type="checkbox" id="metronomeToggle" style="display:none">
-      <div class="metro-row metro-row--top">
-          <button id="metronomeToggleBtn" onclick="toggleMetronome()">♩ METRO OFF</button>
-          <div id="bpmReadout" aria-label="Tap to adjust BPM" onclick="toggleMetroPopup()" title="Click to adjust BPM">120</div>
-      </div>
+      <div id="bpmReadout" aria-label="Tap to adjust BPM" onclick="toggleMetroPopup()" title="Click to adjust BPM">120</div>
       <input type="number" id="bpmInput" value="120" min="30" style="display:none">
-      <div id="metronomeBeats">
-          <div class="metronomeBeat beat-1"></div>
-          <div class="metronomeBeat beat-2"></div>
-          <div class="metronomeBeat beat-3"></div>
-          <div class="metronomeBeat beat-4"></div>
-      </div>
   </div>
 
   <div id="metroPopupOverlay" onclick="closeMetroPopup()"></div>
   <div id="metroPopup" role="dialog" aria-label="BPM controls">
+      <button id="metronomeToggleBtn" onclick="toggleMetronome(); closeMetroPopup();">♩ METRO OFF</button>
       <div class="metro-row">
           <button class="bpm-adj" onclick="adjustBpm(-1)">−1</button>
           <button id="tapTempoBtn"
@@ -739,6 +760,64 @@ function toggleSongsPanel(){
 if(toggleBtn) toggleBtn.addEventListener('click', toggleSongsPanel);
 if(closeBtn) closeBtn.addEventListener('click', hideSongsPanel);
 
+// ── Practice mode play / stop ─────────────────────────
+function practiceStartSong(){
+    const toggle = document.getElementById('metronomeToggle');
+    toggle.checked = true;
+    startMetronome();
+    updateMetronomeBtn();
+    requestWakeLock();
+    practiceIsCountingIn = true;
+    practiceCountBeat = 4;
+    updateButtonStates();
+    runCountIn();
+}
+
+function runCountIn(){
+    const countEl = document.getElementById('countInDisplay');
+    const songEl  = document.getElementById('currentSongDisplay');
+    if(practiceCountBeat <= 0){
+        practiceIsCountingIn = false;
+        practiceSongStart = Date.now();
+        if(countEl){ countEl.style.display = 'none'; countEl.textContent = ''; }
+        if(songEl){ songEl.style.display = ''; }
+        practiceTimer = setInterval(updateDisplay, 250);
+        updateButtonStates();
+        updateDisplay();
+        return;
+    }
+    if(countEl){
+        countEl.textContent = practiceCountBeat;
+        countEl.style.display = 'block';
+        // Retrigger animation on each beat
+        countEl.style.animation = 'none';
+        countEl.offsetHeight; // reflow
+        countEl.style.animation = '';
+    }
+    if(songEl) songEl.style.display = 'none';
+    practiceCountBeat--;
+    practiceCountTimer = setTimeout(runCountIn, 60000 / Math.max(1, currentBpm));
+}
+
+function practiceStopSong(){
+    if(practiceCountTimer){ clearTimeout(practiceCountTimer); practiceCountTimer = null; }
+    practiceIsCountingIn = false;
+    practiceCountBeat = 0;
+    if(practiceTimer){ clearInterval(practiceTimer); practiceTimer = null; }
+    practiceSongStart = null;
+    const countEl = document.getElementById('countInDisplay');
+    if(countEl){ countEl.style.display = 'none'; countEl.textContent = ''; }
+    const songEl = document.getElementById('currentSongDisplay');
+    if(songEl) songEl.style.display = '';
+    stopMetronome();
+    const toggle = document.getElementById('metronomeToggle');
+    toggle.checked = false;
+    updateMetronomeBtn();
+    releaseWakeLock();
+    updateButtonStates();
+    updateDisplay();
+}
+
 // ── Practice / Performance mode ───────────────────────
 let currentMode = localStorage.getItem('sorTrackerMode') || 'performance';
 
@@ -833,6 +912,13 @@ let currentBpm = 120;
 let metronomeTimer = null;
 let lastSongAppliedBpm = -1;
 let wakeLock = null;
+
+// ── Practice mode state ───────────────────────────────
+let practiceSongStart = null;   // Date.now() when current song started (post count-in)
+let practiceTimer = null;       // setInterval handle for per-song display updates
+let practiceCountTimer = null;  // setTimeout chain for count-in
+let practiceIsCountingIn = false;
+let practiceCountBeat = 0;
 
 // ── Web Audio metronome ──────────────────────────────
 let audioCtx = null;
@@ -1314,33 +1400,43 @@ function remainingDuration(withDrops, elapsed){
 }
 
 function updateDisplay(){
-    const elapsed=startTime ? Math.floor(getElapsedMs()/1000*speedFactor) : 0;
-    const realElapsed=startTime ? Math.floor(getElapsedMs()/1000) : 0;
-    if(autoDrop) computeDroppedSongs(elapsed);
-    updateDropBtn(elapsed);
-    document.getElementById('timerDisplay').textContent=formatTime(elapsed);
-    const maxSec=parseInt(document.getElementById('maxTime').value)*60;
-    const setRemain=remainingDuration(true, elapsed);
-    const gigRemain=Math.max(0, maxSec-elapsed);
-    const remEl=document.getElementById('timeRemaining');
-    if(remEl){
-        remEl.textContent=`${formatTime(setRemain)} of ${formatTime(gigRemain)}`;
-        remEl.style.color=setRemain>gigRemain?'red':'#0cf';
+    const isPractice = currentMode === 'practice';
+    let elapsed;
+
+    if(isPractice){
+        elapsed = practiceSongStart ? Math.floor((Date.now()-practiceSongStart)/1000) : 0;
+    } else {
+        elapsed = startTime ? Math.floor(getElapsedMs()/1000*speedFactor) : 0;
+        if(autoDrop) computeDroppedSongs(elapsed);
+        updateDropBtn(elapsed);
     }
-    const progress=document.getElementById('progressBar');
-    if(progress){
-        progress.style.width=Math.min(100,elapsed/maxSec*100)+"%";
+
+    document.getElementById('timerDisplay').textContent = formatTime(elapsed);
+
+    if(!isPractice){
+        const maxSec=parseInt(document.getElementById('maxTime').value)*60;
+        const setRemain=remainingDuration(true, elapsed);
+        const gigRemain=Math.max(0, maxSec-elapsed);
+        const remEl=document.getElementById('timeRemaining');
+        if(remEl){
+            remEl.textContent=`${formatTime(setRemain)} of ${formatTime(gigRemain)}`;
+            remEl.style.color=setRemain>gigRemain?'red':'#0cf';
+        }
+        const progress=document.getElementById('progressBar');
+        if(progress) progress.style.width=Math.min(100,elapsed/maxSec*100)+"%";
     }
+
     const curSong=songs[currentIndex];
-    applySongBpm();
-    const songEl=document.getElementById('currentSongDisplay');
-    if(songEl){
-        songEl.textContent=curSong?`${curSong.title} - ${curSong.artist}`:'';
+    if(!practiceIsCountingIn) applySongBpm();
+
+    if(!practiceIsCountingIn){
+        const songEl=document.getElementById('currentSongDisplay');
+        if(songEl) songEl.textContent=curSong?`${curSong.title} - ${curSong.artist}`:'';
     }
+
     const notesEl=document.getElementById('songNotesDisplay');
-    if(notesEl){
-        notesEl.textContent=curSong && curSong.notes?curSong.notes:'';
-    }
+    if(notesEl) notesEl.textContent=curSong && curSong.notes?curSong.notes:'';
+
     const annFlagEl=document.getElementById('currentSongAnnotation');
     const annNoteWrap=document.getElementById('currentSongNoteWrap');
     const annNoteEl=document.getElementById('currentSongNote');
@@ -1353,52 +1449,49 @@ function updateDisplay(){
         if(annFlagEl) annFlagEl.style.display='none';
         if(annNoteWrap) annNoteWrap.style.display='none';
     }
-    const nextEl=document.getElementById('nextSongDisplay');
-    if(nextEl){
-        let idx=currentIndex+1;
-        while(idx<songs.length && songs[idx].dropped) idx++;
-        const nextSong=idx<songs.length?songs[idx]:null;
-        nextEl.textContent=nextSong?`Next Up: ${nextSong.title} - ${nextSong.artist}`:'';
-    }
-    const diffEl=document.getElementById('aheadBehind');
-    if(diffEl){
-        diffEl.style.color='';
-        if(curSong){
-            const setRemain = remainingDuration(true, elapsed);
-            const maxSec = parseInt(document.getElementById('maxTime').value) * 60;
-            const gigRemain = Math.max(0, maxSec - elapsed);
-            let diff = gigRemain - setRemain;
-            let text = 'On time';
-            if(Math.abs(diff) >= 1){
-                if(diff < 0){
-                    text = `Behind ${formatTime(-diff)}`;
-                    diffEl.style.color = 'red';
-                }else{
-                    text = `Ahead ${formatTime(diff)}`;
-                    diffEl.style.color = 'limegreen';
+
+    if(!isPractice){
+        const nextEl=document.getElementById('nextSongDisplay');
+        if(nextEl){
+            let idx=currentIndex+1;
+            while(idx<songs.length && songs[idx].dropped) idx++;
+            const nextSong=idx<songs.length?songs[idx]:null;
+            nextEl.textContent=nextSong?`Next Up: ${nextSong.title} - ${nextSong.artist}`:'';
+        }
+        const diffEl=document.getElementById('aheadBehind');
+        if(diffEl){
+            diffEl.style.color='';
+            if(curSong){
+                const sr=remainingDuration(true, elapsed);
+                const ms=parseInt(document.getElementById('maxTime').value)*60;
+                const gr=Math.max(0, ms-elapsed);
+                const diff=gr-sr;
+                let text='On time';
+                if(Math.abs(diff)>=1){
+                    if(diff<0){ text=`Behind ${formatTime(-diff)}`; diffEl.style.color='red'; }
+                    else { text=`Ahead ${formatTime(diff)}`; diffEl.style.color='limegreen'; }
                 }
-            }
-            diffEl.textContent = text;
-        }else{
-            diffEl.textContent='';
+                diffEl.textContent=text;
+            } else { diffEl.textContent=''; }
+        }
+        const timeLine=document.getElementById('timeLine');
+        if(timeLine){
+            const rd=remainingDuration(true, elapsed);
+            const endTime=new Date(Date.now()+rd*1000);
+            timeLine.textContent=`Time: ${formatClock(new Date())} -> ${formatClock(endTime)} (Estimated Finish)`;
+        }
+        const meta=document.getElementById('metadataLine');
+        if(meta){
+            const count=songs.filter(s=>s.dropped).length;
+            const avg=transitionDurations.length?transitionDurations.reduce((a,b)=>a+b,0)/transitionDurations.length:0;
+            meta.textContent=`Dropped: ${count} | Avg trans: ${formatTime(avg)}`;
         }
     }
-    const timeLine=document.getElementById('timeLine');
-    if(timeLine){
-        const rd=remainingDuration(true, elapsed);
-        const endTime=new Date(Date.now()+rd*1000);
-        timeLine.textContent=`Time: ${formatClock(new Date())} -> ${formatClock(endTime)} (Estimated Finish)`;
-    }
-    const meta=document.getElementById('metadataLine');
-    if(meta){
-        const count=songs.filter(s=>s.dropped).length;
-        const avg=transitionDurations.length?transitionDurations.reduce((a,b)=>a+b,0)/transitionDurations.length:0;
-        meta.textContent=`Dropped: ${count} | Avg trans: ${formatTime(avg)}`;
-    }
+
     let shouldIndex=null;
-    for(let i=0;i<songs.length;i++){
-        if(elapsed < songs[i].start + songs[i].duration){
-            shouldIndex=i;break;
+    if(!isPractice){
+        for(let i=0;i<songs.length;i++){
+            if(elapsed < songs[i].start + songs[i].duration){ shouldIndex=i; break; }
         }
     }
     document.querySelectorAll('#setlist li').forEach(li=>li.classList.remove('playing','should','dropped'));
@@ -1455,6 +1548,12 @@ function updateButtonStates(){
     const start=document.getElementById('startBtn');
     const stop=document.getElementById('stopBtn');
     if(!start || !stop) return;
+    if(currentMode === 'practice'){
+        const isActive = practiceSongStart !== null || practiceIsCountingIn;
+        start.textContent = isActive ? '⏹️' : '▶️';
+        stop.disabled = true;
+        return;
+    }
     if(!startTime){
         start.textContent='▶️';
         stop.disabled=true;
@@ -1517,13 +1616,19 @@ function stopTimer(){
 }
 
 document.getElementById('startBtn').addEventListener('click', () => {
-    if(!startTime) startTimer();
-    else togglePause();
+    if(currentMode === 'practice'){
+        if(practiceSongStart !== null || practiceIsCountingIn) practiceStopSong();
+        else practiceStartSong();
+    } else {
+        if(!startTime) startTimer();
+        else togglePause();
+    }
 });
 document.getElementById('stopBtn').addEventListener('click', () => {
     if(confirm('Are you sure you want to stop?')) stopTimer();
 });
 function goPrev(){
+    if(currentMode === 'practice') practiceStopSong();
     currentIndex = Math.max(0, currentIndex - 1);
     const elapsed = startTime ? Math.floor(getElapsedMs() / 1000) : 0;
     songStart = elapsed;
@@ -1534,6 +1639,7 @@ function goPrev(){
 }
 
 function goNext(){
+    if(currentMode === 'practice') practiceStopSong();
     const elapsed = startTime ? Math.floor(getElapsedMs() / 1000) : 0;
     if (currentIndex < songs.length - 1) {
         if (actualStart[currentIndex] !== undefined) {
