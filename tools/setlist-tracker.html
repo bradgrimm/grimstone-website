@@ -834,7 +834,15 @@ function practiceStartSong(){
     runVisualCountdown(5);
 }
 
-// Phase 1: silent 5→1 visual countdown at 1-second intervals
+function speakNumber(n){
+    if(!window.speechSynthesis) return;
+    speechSynthesis.cancel();
+    const utt = new SpeechSynthesisUtterance(String(n));
+    utt.rate = 1.1;
+    speechSynthesis.speak(utt);
+}
+
+// Phase 1: spoken + visual 5→1 countdown at 1-second intervals
 function runVisualCountdown(n){
     const countEl = document.getElementById('countInDisplay');
     const songEl  = document.getElementById('currentSongDisplay');
@@ -848,6 +856,7 @@ function runVisualCountdown(n){
         countEl.style.animation = '';
     }
     if(songEl) songEl.style.display = 'none';
+    speakNumber(n);
     practiceCountTimer = setTimeout(() => runVisualCountdown(n - 1), 1000);
 }
 
@@ -898,6 +907,7 @@ function runAudioCountIn(){
 }
 
 function practiceStopSong(){
+    if(window.speechSynthesis) speechSynthesis.cancel();
     if(practiceCountTimer){ clearTimeout(practiceCountTimer); practiceCountTimer = null; }
     practiceIsCountingIn = false;
     practiceCountBeat = 0;
