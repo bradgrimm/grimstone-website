@@ -1,12 +1,18 @@
 // Service Worker for Grimstone website
 // Provides offline support and caching
 
-const CACHE_NAME = 'grimstone-v3-' + Date.now(); // Version bump with timestamp
+const CACHE_NAME = 'grimstone-v4-' + Date.now();
 const urlsToCache = [
     '/',
     '/index.html',
     '/press.html',
+    '/tools/setlist-tracker.html',
     '/tools/setlist-optimizer.html',
+    '/manifest.json',
+    '/assets/images/favicon-192.png',
+    '/assets/images/favicon-512.png',
+    '/assets/images/apple-touch-icon.png',
+    'https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.3.0/papaparse.min.js',
     'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;600;700&family=Space+Grotesk:wght@400;700&display=swap'
 ];
 
