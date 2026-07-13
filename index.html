@@ -23,13 +23,13 @@
     <meta property="og:title" content="Grimstone | Utah Punk & Alt-Rock Band">
     <meta property="og:description" content="Energetic punk/pop-punk band. Check out our music and upcoming shows.">
     <meta property="og:url" content="https://grimstonemusic.com">
-    <meta property="og:image" content="https://grimstonemusic.com/assets/images/og-image.jpg">
+    <meta property="og:image" content="https://grimstonemusic.com/assets/images/photo_1.jpg">
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Grimstone | Utah Punk & Alt-Rock Band">
     <meta name="twitter:description" content="Energetic punk/pop-punk band. Check out our music and upcoming shows.">
-    <meta name="twitter:image" content="https://grimstonemusic.com/assets/images/og-image.jpg">
+    <meta name="twitter:image" content="https://grimstonemusic.com/assets/images/photo_1.jpg">
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -196,20 +196,6 @@
             background: var(--black);
         }
 
-        #hero::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: url('assets/images/hero-photo.jpg');
-            background-size: cover;
-            background-position: center;
-            opacity: 0.3;
-            z-index: 0;
-        }
-
         #hero::after {
             content: '';
             position: absolute;
@@ -370,16 +356,6 @@
             box-shadow: 0 0 30px var(--primary);
         }
 
-        /* Music Section */
-        #music {
-            background-color: var(--black);
-        }
-
-        .music-content {
-            display: grid;
-            gap: var(--spacing-lg);
-        }
-
         .video-container {
             position: relative;
             padding-bottom: 56.25%; /* 16:9 aspect ratio */
@@ -394,165 +370,6 @@
             left: 0;
             width: 100%;
             height: 100%;
-        }
-
-        /* Audio Player */
-        .audio-player {
-            background: var(--gray-dark);
-            border: 3px solid var(--primary);
-            padding: 2rem;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .audio-player::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: repeating-linear-gradient(
-                0deg,
-                transparent,
-                transparent 2px,
-                rgba(255, 0, 85, 0.03) 2px,
-                rgba(255, 0, 85, 0.03) 4px
-            );
-            pointer-events: none;
-        }
-
-        .player-info {
-            text-align: center;
-            margin-bottom: 1.5rem;
-        }
-
-        .track-title {
-            font-family: var(--font-heading);
-            font-size: 2rem;
-            color: var(--primary);
-            margin-bottom: 0.5rem;
-        }
-
-        .track-artist {
-            font-family: var(--font-accent);
-            color: var(--secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
-
-        .player-controls {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .player-controls button {
-            background: var(--gray-medium);
-            border: 2px solid var(--primary);
-            color: var(--primary);
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .player-controls button:hover {
-            background: var(--primary);
-            color: var(--white);
-            box-shadow: 0 0 20px var(--primary);
-            transform: scale(1.1);
-        }
-
-        .player-controls button#playBtn {
-            width: 80px;
-            height: 80px;
-            font-size: 2rem;
-        }
-
-        .player-progress {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-            margin-bottom: 1rem;
-        }
-
-        .time {
-            font-family: var(--font-accent);
-            color: var(--secondary);
-            min-width: 50px;
-        }
-
-        input[type="range"] {
-            flex: 1;
-            -webkit-appearance: none;
-            appearance: none;
-            height: 6px;
-            background: var(--gray-medium);
-            outline: none;
-            border-radius: 3px;
-        }
-
-        input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 20px;
-            height: 20px;
-            background: var(--primary);
-            cursor: pointer;
-            border-radius: 50%;
-            box-shadow: 0 0 10px var(--primary);
-        }
-
-        input[type="range"]::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            background: var(--primary);
-            cursor: pointer;
-            border-radius: 50%;
-            border: none;
-            box-shadow: 0 0 10px var(--primary);
-        }
-
-        .playlist {
-            list-style: none;
-            margin-top: 2rem;
-        }
-
-        .playlist li {
-            padding: 1rem;
-            border-bottom: 1px solid var(--gray-medium);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-family: var(--font-accent);
-        }
-
-        .playlist li:hover {
-            background: var(--gray-medium);
-            border-left: 4px solid var(--primary);
-            padding-left: 1.5rem;
-        }
-
-        .playlist li.active {
-            background: var(--gray-medium);
-            border-left: 4px solid var(--secondary);
-            padding-left: 1.5rem;
-            color: var(--secondary);
-        }
-
-        /* Visualizer */
-        #visualizer {
-            width: 100%;
-            height: 100px;
-            margin-top: 1rem;
-            border: 2px solid var(--secondary);
-            background: var(--black);
         }
 
         /* Contact Section */
@@ -732,15 +549,6 @@
                 margin-top: 2rem !important;
             }
 
-            .music-content .fade-in {
-                flex-direction: column !important;
-            }
-
-            .music-content .fade-in > div:first-child {
-                width: 300px !important;
-                margin: 0 auto 2rem !important;
-            }
-
             .about-content,
             .contact-content {
                 grid-template-columns: 1fr;
@@ -780,7 +588,6 @@
             <button class="menu-toggle" id="menuToggle" aria-label="Toggle menu">☰</button>
             <ul id="navMenu">
                 <li><a href="#hero">Home</a></li>
-                <li><a href="#music">Music</a></li>
                 <li><a href="#about">About</a></li>
                 <li><a href="#contact">Contact</a></li>
                 <li><a href="press.html">Press Kit</a></li>
@@ -805,45 +612,11 @@
 
             <!-- Listen Now button with subtitle - below both elements -->
             <div style="text-align: center; margin-top: 2rem; display: flex; flex-direction: column; align-items: center; gap: 1rem;">
-                <p class="hero-subtitle" style="margin: 0;">PUNK • POP-PUNK • ALTERNATIVE ROCK</p>
-                <a href="#music" class="cta-button">Listen Now</a>
+                <p class="hero-subtitle" style="margin: 0;">90s • 2000s • CLASSIC ROCK</p>
+                <a href="press.html#music" class="cta-button">Watch Us Live</a>
             </div>
         </div>
         <div class="scroll-indicator"></div>
-    </section>
-
-    <!-- Music Section -->
-    <section id="music">
-        <div class="container">
-            <h2 class="section-title fade-in">Music</h2>
-            <div class="music-content">
-                <!-- Bandcamp Embed with Logo on Left -->
-                <div class="fade-in" style="display: flex; gap: 2rem; align-items: flex-start; justify-content: center; max-width: 1200px; margin: 0 auto;">
-                    <!-- Left: Reaper Logo -->
-                    <div style="flex-shrink: 0;">
-                        <img src="assets/images/grimstone_logo_optimized.webp" alt="Grimstone" style="width: 556px; max-width: 100%;">
-                    </div>
-
-                    <!-- Right: Bandcamp Players -->
-                    <div style="flex: 1; background: var(--gray-dark); border: 3px solid var(--primary); padding: 2rem;">
-                        <!-- Track 1: The Kraken -->
-                        <iframe style="border: 0; width: 100%; height: 120px; margin-bottom: 1rem;" src="https://bandcamp.com/EmbeddedPlayer/track=3192886681/size=large/bgcol=000000/linkcol=ff0055/tracklist=false/artwork=small/transparent=true/" seamless><a href="https://grimstones.bandcamp.com/track/the-kraken">The Kraken by Grimstone</a></iframe>
-
-                        <!-- Track 2: A Simple Song -->
-                        <iframe style="border: 0; width: 100%; height: 120px; margin-bottom: 1rem;" src="https://bandcamp.com/EmbeddedPlayer/track=3027200607/size=large/bgcol=000000/linkcol=ff0055/tracklist=false/artwork=small/transparent=true/" seamless><a href="https://grimstones.bandcamp.com/track/a-simple-song">A Simple Song by Grimstone</a></iframe>
-
-                        <!-- Track 3: How Do I Find -->
-                        <iframe style="border: 0; width: 100%; height: 120px; margin-bottom: 1.5rem;" src="https://bandcamp.com/EmbeddedPlayer/track=4068775686/size=large/bgcol=000000/linkcol=ff0055/tracklist=false/artwork=small/transparent=true/" seamless><a href="https://grimstones.bandcamp.com/track/how-do-i-find">How Do I Find by Grimstone</a></iframe>
-
-                        <div style="text-align: center;">
-                            <a href="https://grimstones.bandcamp.com/" target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 0.75rem 2rem; background: var(--gray-medium); color: var(--secondary); font-family: var(--font-accent); font-size: 0.875rem; letter-spacing: 0.1em; text-transform: uppercase; border: 2px solid var(--secondary); text-decoration: none; transition: all 0.3s ease;">
-                                Download on Bandcamp →
-                            </a>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
     </section>
 
     <!-- About Section -->
@@ -852,18 +625,18 @@
             <h2 class="section-title fade-in">About the Band</h2>
             <div class="about-content">
                 <div class="about-text fade-in">
-                    <p>Grimstone brings high-energy punk and alternative rock to the stage, channeling the spirit of 90s and 2000s rock. Our mission is simple: play live, write originals, and keep the music fun and authentic.</p>
+                    <p>Grimstone is a five-piece rock band from Riverton, Utah, built to keep a room moving. We play tight, high-energy sets of the anthems crowds already know — spanning 90s, 2000s, and classic rock — and we play them like we mean it.</p>
 
-                    <p>Drawing inspiration from Jimmy Eat World, Pixies, Ramones, Foo Fighters, The Strokes, The Killers, and Franz Ferdinand, we blend punk attitude with pop sensibility. Whether we're covering classics or crafting our own sound, we bring raw energy and tight musicianship to every show.</p>
+                    <p>From Blink-182 and The Killers to Journey, Van Halen, and KISS, our setlist is built to fill a dance floor and hold a room all night. We bring raw energy and tight musicianship to every show.</p>
 
-                    <p>We're all about nailing the core songs, adding some twisty genre-bent covers, and building a setlist that keeps the crowd moving. 2026 is the year we take our originals to the next level.</p>
+                    <p>Alongside the covers, we perform our own original songs — Little Mouse, Are You Listening, and more — giving every set a sound that's unmistakably ours. Bar, brewery, private event, or festival, Grimstone brings the party.</p>
 
                     <div class="genre-tags">
-                        <span class="tag">Punk</span>
-                        <span class="tag">Pop-Punk</span>
-                        <span class="tag">Alternative</span>
+                        <span class="tag">Rock Covers</span>
                         <span class="tag">90s Rock</span>
                         <span class="tag">2000s Rock</span>
+                        <span class="tag">Classic Rock</span>
+                        <span class="tag">Originals</span>
                     </div>
                 </div>
 
@@ -948,9 +721,6 @@
             document.querySelectorAll('.fade-in').forEach(el => {
                 observer.observe(el);
             });
-
-            // Bandcamp player replaces custom audio player
-            // No JavaScript needed - Bandcamp iframe handles everything
 
             // Fix viewport height on mobile
             function setVH() {
